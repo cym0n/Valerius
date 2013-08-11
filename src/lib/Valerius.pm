@@ -24,7 +24,7 @@ get '/novel' => sub {
     my $entries_per_page = 20;
     my $page = params->{page} || 1;
     my $order = params->{order} || 'desc';
-    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1});
+    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
     template "novel", { chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
 };
 

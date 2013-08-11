@@ -1,0 +1,32 @@
+<div class="content">
+    <div id="shoulder" class="hidden-phone">
+        <div id="toLast" >
+            <div id="toLastText">
+                <a href="/novel/last-chapter">Leggi l'ultimo capitolo</a>
+            </div>
+        </div>
+        <div id="toLast" >
+            <div id="toLastText">
+                <a href="/novel/first-chapter">Leggi dall'inizio</a>
+            </div>
+        </div>
+   
+    </div>
+    <div id="maincolumn">
+    [% if article %]
+    <div id="news" class="well">
+        <h3>Notizie dalla Guerra del Vapore</h3>
+        <h4>[% article.publish_date %] - [% article.title %]</h4>
+        <p>
+           [% article.text %]
+        </p>
+    </div>
+    [% end %]
+    <div id="sample">
+        <h3>Capitolo [% chapter.chapter_number %]</h3>
+        <h2>[% chapter.title %]</h2>
+        <p>[% chapter.text %]</p>
+        <div class="read-more pull-right"><a href="[% chapter.link %]">&gt; Leggi tutto</a></div>
+    </div>
+    </div>
+</div>

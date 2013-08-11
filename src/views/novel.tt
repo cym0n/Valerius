@@ -1,0 +1,25 @@
+<div class="content">
+    <div id="novelcolumn">
+        <div id="chapnumbers" class="pagination">
+            <ul>
+                [% pageof = 1 %]
+                [% WHILE  pageof <= last_page %]
+                <li [% IF pageof == page %]class="active"[% END %]>
+                    <a href="[% request.path %]?page=[% pageof %]&order=[% order %]">[% pageof %]</a>
+                </li>
+                [% pageof = pageof + 1 %]
+                [% END %]
+            </ul>
+        </div>
+         <div class="pagination">
+            <ul>
+                [% IF page > 1 %]<li><a href="[% request.path %]?page=[% page - 1 %]&order=[% order %]">Prev</a></li>[% END %]
+                <li><a href="[% request.path %]?page=1&order=[% IF order == 'asc' %]desc[% ELSE %]asc[% END %]">Inverti</a></li>
+                [% IF page < last_page %]<li><a href="[% request.path %]?page=[% page + 1 %]&order=[% order %]">Next</a></li>[% END %]
+            </ul>
+        </div>
+        [% FOREACH c IN chapters %]
+            <div><a href="/novel/[% c.slug %]">Capitolo [% c.number %] - [% c.title %]</a></div>
+        [% END %]
+    </div>
+</div>

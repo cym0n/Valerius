@@ -1,0 +1,33 @@
+<div class="content">
+    <div id="chaptercolumn">
+        <ul class="pager">
+          [% IF prev_slug %]
+          <li class="previous">
+            <a href="/novel/[% prev_slug %]">&larr; Precedente</a>
+          </li>
+          [% END %]
+          [% IF next_slug %]
+          <li class="next">
+            <a href="/novel/[% next_slug %]">Successivo &rarr;</a>
+          </li>
+          [% END %]
+        </ul>
+        <div id="chapter">
+            <h3>Capitolo [% number %]</h3>
+            <h2>[% title %]</h2>
+            [% text %]
+        </div>
+        <ul class="pager">
+          [% IF prev_slug %]
+          <li class="previous">
+            <a href="/novel/[% prev_slug %]">&larr; Precedente</a>
+          </li>
+          [% END %]
+          [% IF next_slug %]
+          <li class="next">
+            <a href="/novel/[% next_slug %]">Successivo &rarr;</a>
+          </li>
+          [% END %]
+        </ul>
+    </div>
+</div>

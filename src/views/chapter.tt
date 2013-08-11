@@ -13,9 +13,9 @@
           [% END %]
         </ul>
         <div id="chapter">
-            <h3>Capitolo [% number %]</h3>
-            <h2>[% title %]</h2>
-            [% text %]
+            <h3>Capitolo [% chapter.display_order %]</h3>
+            <h2>[% chapter.title %]</h2>
+            [% chapter.text %]
         </div>
         <ul class="pager">
           [% IF prev_slug %]

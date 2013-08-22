@@ -23,13 +23,19 @@ hook before => sub {
 get '/' => sub {
     my $news = Strehler::Element::Article::get_last_by_date('notizie');
     my $chapter = Strehler::Element::Article::get_last_by_order('romanzo');
-    my %news_data = $news->get_ext_data('it');
-    my %chapter_data = $chapter->get_ext_data('it');
-
-    $news_data{'publish_date'} = $news_data{'publish_date'}->strftime('%d-%m-%Y');
-    $chapter_data{'text'} = markdown(substr($chapter_data{'text'}, 0, 800) . "...");
-    $chapter_data{'link'} = '/novel/' . $chapter_data{'slug'};
-
+    my %news_data = undef;
+    if($news)
+    {
+        %news_data = $news->get_ext_data('it');
+        $news_data{'publish_date'} = $news_data{'publish_date'}->strftime('%d-%m-%Y');
+    }
+    my %chapter_data = undef;
+    if($chapter)
+    {
+        %chapter_data = $chapter->get_ext_data('it');
+        $chapter_data{'text'} = markdown(substr($chapter_data{'text'}, 0, 800) . "...");
+        $chapter_data{'link'} = '/novel/' . $chapter_data{'slug'};
+    }
     template "index", { article => \%news_data, chapter => \%chapter_data };
 };
 

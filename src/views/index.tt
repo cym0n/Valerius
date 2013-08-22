@@ -13,7 +13,7 @@
    
     </div>
     <div id="maincolumn">
-    [% if article %]
+    [% if article.title || article.text %]
     <div id="news" class="well">
         <h3>Notizie dalla Guerra del Vapore</h3>
         <h4>[% article.publish_date %] - [% article.title %]</h4>

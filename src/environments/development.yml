@@ -30,3 +30,5 @@ auto_reload: 0
 startup_info: 1
 
 session: "simple"
+
+site_closed: 0

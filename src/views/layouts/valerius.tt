@@ -5,9 +5,11 @@
 <meta http-equiv="Content-type" content="text/html; charset=[% settings.charset %]" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Valerius Demoire - [% page_title %]</title>
+<meta name="description" content="[% page_description %]" />
 <link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" href="[% request.uri_base %]/css/valerius.css" />
 <link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap-responsive.css" />
+[% IF canonical %]<link rel="canonical" href="[% canonical %]"/>[%  END %]
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="[% request.uri_base %]/bootstrap/js/bootstrap.min.js"></script>
 

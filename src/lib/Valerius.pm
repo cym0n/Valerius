@@ -36,7 +36,8 @@ get '/' => sub {
         $chapter_data{'text'} = markdown(substr($chapter_data{'text'}, 0, 800) . "...");
         $chapter_data{'link'} = '/novel/' . $chapter_data{'slug'};
     }
-    template "index", { page_title => 'Homepage', article => \%news_data, chapter => \%chapter_data };
+    template "index", { page_title => 'Homepage', page_description => 'Valerius Demoire, romanzo steampunk online pieno di guerra e robot giganti',
+                        article => \%news_data, chapter => \%chapter_data };
 };
 
 get '/novel' => sub {
@@ -44,7 +45,9 @@ get '/novel' => sub {
     my $page = params->{page} || 1;
     my $order = params->{order} || 'desc';
     my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
-    template "novel", { page_title => 'Romanzo', chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
+    template "novel", { page_title => 'Romanzo', page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire',
+                        chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
+
 };
 
 get '/novel/last-chapter' => sub {
@@ -81,16 +84,17 @@ get '/novel/:slug' => sub {
         {
             $prev_slug = $prev->get_attr_multilang('slug', 'it');
         }
-        template "chapter", { page_title => 'Capitolo ' . $chapter_data{'display_order'}, chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
+        template "chapter", { page_title => 'Capitolo ' . $chapter_data{'display_order'}, page_description => 'Valerius Demoire - Capitolo ' . $chapter_data{'display_order'} . ' - ' . $chapter_data{'title'}, canonical => "http:/www.valeriusdemoire.it/novel/" . $chapter_data{'slug'},
+                              chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
     }
 };
 
 get '/characters' => sub {
-    template 'under_constr', { page_title => 'Personaggi' };
+    template 'under_constr', { page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire" };
 };
 
 get '/author' => sub {
-    template 'author', { page_title => 'Autore' };
+    template 'author', { page_title => 'Autore', page_description => "Breve biografia dell'autore di Valerius Demoire" };
 };
 
 get '/closed' => sub {

@@ -32,3 +32,5 @@ startup_info: 1
 session: "simple"
 
 site_closed: 0
+
+google_monitor: 0

@@ -20,6 +20,11 @@ hook before => sub {
     }
 };
 
+hook before_template_render => sub {
+        my $tokens = shift;
+        $tokens->{'google_monitor'} = config->{'google_monitor'};
+    };
+
 get '/' => sub {
     my $news = Strehler::Element::Article::get_last_by_date('notizie');
     my $chapter = Strehler::Element::Article::get_last_by_order('romanzo');

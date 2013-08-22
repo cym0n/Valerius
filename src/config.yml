@@ -38,5 +38,9 @@ plugins:
         PrintError: 1
         mysql_enable_utf8: 1
 
+admin_secured: 1
+site_closed: 1
+
 languages: ['it']
 default_language: 'it'
+

@@ -8,6 +8,15 @@ use Data::Dumper;
 
 set layout => 'valerius';
 
+hook before => sub {
+    return if(! config->{admin_secured});
+    return if(! config->{site_closed});
+    if(! session 'user')
+    {
+        redirect dancer_app->prefix . '/closed';
+    }
+};
+
 get '/' => sub {
     my $news = Strehler::Element::Article::get_last_by_date('notizie');
     my $chapter = Strehler::Element::Article::get_last_by_order('romanzo');
@@ -16,6 +25,7 @@ get '/' => sub {
 
     $news_data{'publish_date'} = $news_data{'publish_date'}->strftime('%d-%m-%Y');
     $chapter_data{'text'} = markdown(substr($chapter_data{'text'}, 0, 800) . "...");
+    $chapter_data{'link'} = '/novel/' . $chapter_data{'slug'};
 
     template "index", { article => \%news_data, chapter => \%chapter_data };
 };
@@ -72,5 +82,12 @@ get '/characters' => sub {
 
 get '/author' => sub {
     template 'author';
-}
+};
+
+get '/closed' => sub {
+    template 'closed', {}, {layout => 'valerius_light'};
+};
+
+
+1;
 

@@ -9,11 +9,14 @@ use Data::Dumper;
 set layout => 'valerius';
 
 hook before => sub {
+    my $context = shift;
     return if(! config->{admin_secured});
     return if(! config->{site_closed});
+    return if(request->path_info eq dancer_app->prefix . '/closed');
     if(! session 'user')
     {
-        redirect dancer_app->prefix . '/closed';
+        $context->response( forward(dancer_app->prefix . '/closed') );
+        $context->response->halt;
     }
 };
 

@@ -36,7 +36,7 @@ get '/' => sub {
         $chapter_data{'text'} = markdown(substr($chapter_data{'text'}, 0, 800) . "...");
         $chapter_data{'link'} = '/novel/' . $chapter_data{'slug'};
     }
-    template "index", { article => \%news_data, chapter => \%chapter_data };
+    template "index", { page_title => 'Homepage', article => \%news_data, chapter => \%chapter_data };
 };
 
 get '/novel' => sub {
@@ -44,7 +44,7 @@ get '/novel' => sub {
     my $page = params->{page} || 1;
     my $order = params->{order} || 'desc';
     my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
-    template "novel", { chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
+    template "novel", { page_title => 'Romanzo', chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
 };
 
 get '/novel/last-chapter' => sub {
@@ -81,16 +81,16 @@ get '/novel/:slug' => sub {
         {
             $prev_slug = $prev->get_attr_multilang('slug', 'it');
         }
-        template "chapter", { chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
+        template "chapter", { page_title => 'Capitolo ' . $chapter_data{'display_order'}, chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
     }
 };
 
 get '/characters' => sub {
-    template 'under_constr';
+    template 'under_constr', { page_title => 'Personaggi' };
 };
 
 get '/author' => sub {
-    template 'author';
+    template 'author', { page_title => 'Autore' };
 };
 
 get '/closed' => sub {

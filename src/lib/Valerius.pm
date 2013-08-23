@@ -32,6 +32,7 @@ get '/' => sub {
     if($news)
     {
         %news_data = $news->get_ext_data('it');
+        $news_data{'text'} = markdown($news_data{'text'});
         $news_data{'publish_date'} = $news_data{'publish_date'}->strftime('%d-%m-%Y');
     }
     my %chapter_data = undef;

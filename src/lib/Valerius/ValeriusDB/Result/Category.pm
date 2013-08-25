@@ -86,27 +86,23 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-__PACKAGE__->resultset_class('Valerius::ValeriusDB::Category::ResultSet');
+__PACKAGE__->belongs_to(
+  "parent_category",
+  "Site::SiteDB::Result::Category",
+  { id => "parent" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => undef,
+    on_update     => undef,
+  },
+);
 
-package Valerius::ValeriusDB::Category::ResultSet;
-use base 'DBIx::Class::ResultSet';
-
-
-
-sub make_select
-{
-    my $self = shift;
-    my @category_values = $self->all();
-    my @category_values_for_select;
-    push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
-    for(@category_values)
-    {
-        push @category_values_for_select, { value => $_->id, label => $_->category }
-    }
-    return \@category_values_for_select;
-  
-}
-
-
+__PACKAGE__->has_many(
+  "subcategories",
+  "Site::SiteDB::Result::Category",
+  { "foreign.parent" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 1;

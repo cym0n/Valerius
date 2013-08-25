@@ -127,20 +127,4 @@ __PACKAGE__->belongs_to(
 );
 
 
-sub main_title
-{
-    my $self = shift;
-    my @contents = $self->contents->search({ language => 'it' });
-    if($contents[0])
-    {
-        return $contents[0]->title;
-    }
-    else
-    {
-        #Should not be possible
-        return "*** no title ***";
-    }
-
-}
-
 1;

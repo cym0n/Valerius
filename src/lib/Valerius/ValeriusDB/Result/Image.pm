@@ -99,40 +99,4 @@ __PACKAGE__->belongs_to(
 );
 
 
-
-sub main_title
-{
-    my $self = shift;
-    my @desc = $self->descriptions->search({ language => 'it' });
-    if($desc[0])
-    {
-        return $desc[0]->title;
-    }
-    else
-    {
-        return "*** no title ***";
-    }
-
-}
-
-__PACKAGE__->resultset_class('Valerius::ValeriusDB::Image::ResultSet');
-
-package Valerius::ValeriusDB::Image::ResultSet;
-use base 'DBIx::Class::ResultSet';
-
-
-
-sub make_select
-{
-    my $self = shift;
-    my @images_values = $self->all();
-    my @images_values_for_select;
-    push @images_values_for_select, { value => undef, label => "Seleziona immagine..."};
-    for(@images_values)
-    {
-        push @images_values_for_select, { value => $_->id, label => $_->main_title }
-    }
-    return \@images_values_for_select;
-}
-
 1;

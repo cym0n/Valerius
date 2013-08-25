@@ -2,12 +2,12 @@
     <div id="shoulder" class="hidden-phone">
         <div id="toLast" >
             <div id="toLastText">
-                <a href="/novel/last-chapter">Leggi l'ultimo capitolo</a>
+                <a href="/romanzo/ultimo-capitolo">Leggi l'ultimo capitolo</a>
             </div>
         </div>
         <div id="toLast" >
             <div id="toLastText">
-                <a href="/novel/first-chapter">Leggi dall'inizio</a>
+                <a href="/romanzo/primo-capitolo">Leggi dall'inizio</a>
             </div>
         </div>
    

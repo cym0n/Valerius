@@ -1,0 +1,3 @@
+[% FOREACH c IN characters %] 
+<p><strong>[% c.title %]</strong>: [% c.text %]</p>
+[% END %]

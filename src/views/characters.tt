@@ -1,0 +1,23 @@
+<div class="content">
+    <div id="characterscolumn">
+        <div class="well">
+            <p>In questa sezione del sito sono riportati tutti i personaggi del romanzo, divisi per nazionalit&agrave;.</p>
+            <p>Valerius Demoire &egrave; un romanzo dallo sviluppo caotico e non granch&egrave; organico quindi vi accorgerete presto che i personaggi da tenere in considerazione sono molti. Quindi pensiamo che, andando avanti con la lettura, questa sezione vi risulter&agrave; parecchio utile.</p>
+            <p><em>ATTENZIONE!</em> I personaggi sono presentati in ordine di apparizione nella vicenda. Se siete a pari con la lettura non avrete niente da temere, altrimenti andando a leggere troppo avanti potreste bruciarvi qualche spoiler pi&ugrave; o meno grande.</p>
+    </div>
+    <div class="nations">
+        <ul>
+            <!--li><img src="/upload/United-Kingdo-icon.png" /><a href="#">Inglesi</a></li>
+            <li><img src="/upload/United-Kingdo-icon.png" />Inglesi</li>
+            <li><img src="/upload/United-Kingdo-icon.png" />Inglesi</li>
+            <li><img src="/upload/United-Kingdo-icon.png" />Inglesi</li-->
+            [% FOREACH n IN nations %] 
+            <li><img src="[% n.image %]" /><a href="/personaggi/[% n.name %]">[% n.title %]</a></li>
+            [% END %]
+        </ul>
+
+    </div>
+
+
+</div>
+

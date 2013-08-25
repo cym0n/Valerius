@@ -1,3 +1,4 @@
 perl_sandbox
 docs/carta_virtuale.txt
 src/environments/ec2.yml
+src/public/upload

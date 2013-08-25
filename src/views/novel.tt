@@ -19,7 +19,7 @@
             </ul>
         </div>
         [% FOREACH c IN chapters %]
-            <div><a href="/novel/[% c.slug %]">Capitolo [% c.display_order %] - [% c.title %]</a></div>
+            <div><a href="/romanzo/[% c.slug %]">Capitolo [% c.display_order %] - [% c.title %]</a></div>
         [% END %]
     </div>
 </div>

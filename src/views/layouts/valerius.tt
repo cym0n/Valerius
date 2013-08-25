@@ -28,11 +28,11 @@
                 <a href="/"><img src="/images/logo.png" class="brand" /></a>
             </div>
             <ul class="nav">
-                <li class="span2 hidden-phone"><a href="/novel">Romanzo</a></li>
-                <li class="span2 hidden-phone"><a href="/characters">Personaggi</a></li>
-                <li class="span2 hidden-phone"><a href="/author">Autore</a></li>
-                <li class="span2 visible-phone"><a href="/novel/last-chapter">Ultimo capitolo</a></li>
-                <li class="span2 visible-phone"><a href="/novel/first-chapter">Primo capitolo</a></li>
+                <li class="span2 hidden-phone"><a href="/romanzo">Romanzo</a></li>
+                <li class="span2 hidden-phone"><a href="/personaggi">Personaggi</a></li>
+                <li class="span2 hidden-phone"><a href="/autore">Autore</a></li>
+                <li class="span2 visible-phone"><a href="/romanzo/ultimo-capitolo">Ultimo capitolo</a></li>
+                <li class="span2 visible-phone"><a href="/romanzo/primo-capitolo">Primo capitolo</a></li>
             </ul>
         </div>
     </div>
@@ -41,9 +41,9 @@
 <div class="navbar visible-phone">
     <div class="navbar-inner">
         <ul class="nav">
-            <li class="span2"><a href="/novel">Romanzo</a></li>
-            <li class="span2"><a href="/characters">Personaggi</a></li>
-            <li class="span2"><a href="/author">Autore</a></li>
+            <li class="span2"><a href="/romanzo">Romanzo</a></li>
+            <li class="span2"><a href="/personaggi">Personaggi</a></li>
+            <li class="span2"><a href="/autore">Autore</a></li>
         </ul>
     </div>
 </div>

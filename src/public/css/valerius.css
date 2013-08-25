@@ -21,6 +21,7 @@ a:focus {
 {
     margin-bottom: 30px;
     padding-left: 15px; 
+    padding-right: 15px; 
 }
 .navbar-inner {
     background-image: linear-gradient(to bottom, #D8BA88, #B08539);
@@ -174,4 +175,24 @@ a:focus {
 #authorcolumn div
 {
     margin: 15px;
+}
+#characterscolumn .well
+{   
+    background-color: #d2d2d2;
+}
+#characterscolumn .nations
+{
+    font-size: 32px;
+}
+#characterscolumn .nations img
+{
+    margin-right: 15px;
+}
+#characterscolumn .nations ul
+{
+    list-style-type: none;
+}
+#characterscolumn .nations li
+{
+    margin-bottom: 20px;
 }

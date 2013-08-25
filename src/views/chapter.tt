@@ -3,12 +3,12 @@
         <ul class="pager">
           [% IF prev_slug %]
           <li class="previous">
-            <a href="/novel/[% prev_slug %]">&larr; Precedente</a>
+            <a href="/romanzo/[% prev_slug %]">&larr; Precedente</a>
           </li>
           [% END %]
           [% IF next_slug %]
           <li class="next">
-            <a href="/novel/[% next_slug %]">Successivo &rarr;</a>
+            <a href="/romanzo/[% next_slug %]">Successivo &rarr;</a>
           </li>
           [% END %]
         </ul>
@@ -20,12 +20,12 @@
         <ul class="pager">
           [% IF prev_slug %]
           <li class="previous">
-            <a href="/novel/[% prev_slug %]">&larr; Precedente</a>
+            <a href="/romanzo/[% prev_slug %]">&larr; Precedente</a>
           </li>
           [% END %]
           [% IF next_slug %]
           <li class="next">
-            <a href="/novel/[% next_slug %]">Successivo &rarr;</a>
+            <a href="/romanzo/[% next_slug %]">Successivo &rarr;</a>
           </li>
           [% END %]
         </ul>

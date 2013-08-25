@@ -116,7 +116,7 @@ get '/personaggi' => sub {
 get '/personaggi/:nation' => sub {
     my $n = params->{nation};
     my $nation = Strehler::Element::Category->new(name => $n);
-    my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100});
+    my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc'});
     template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
                                   characters => $characters->{'to_view'}};
 };

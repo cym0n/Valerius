@@ -47,6 +47,11 @@ __PACKAGE__->table("CATEGORIES");
   is_nullable: 1
   size: 120
 
+=head2 parent
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -54,6 +59,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "category",
   { data_type => "varchar", is_nullable => 1, size => 120 },
+  "parent",
+  { data_type => "integer", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -69,8 +76,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-03 15:21:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yEhoF79wyGYiy8Lo2L1d7Q
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-25 18:45:34
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Vd9WhONLrGWeMFo+PrdYXw
 
 __PACKAGE__->has_many(
   "images",

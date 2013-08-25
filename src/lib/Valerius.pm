@@ -95,29 +95,34 @@ get '/romanzo/:slug' => sub {
     }
 };
 
+
 get '/personaggi' => sub {
-    my $main = Strehler::Element::Category->new(name => 'personaggi');
-    my @subs = $main->subcategories();
-    my @data;
-    for(@subs)
-    {
-        my $cat = $_;
-        my %el = $cat->get_basic_data();
-        $el{'title'} = ucfirst($el{'title'});
-        my $images = Strehler::Element::Image::get_list({ category_id => $el{'id'}});
-        $el{'image'} = $images->{'to_view'}->[0]->{'source'};
-        push @data, \%el;
-    }
-    template 'characters', { page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire",
-                             nations => \@data };
+    template 'under_constr', { page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire"}
+                             
 };
-get '/personaggi/:nation' => sub {
-    my $n = params->{nation};
-    my $nation = Strehler::Element::Category->new(name => $n);
-    my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100});
-    template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
-                                  characters => $characters->{'to_view'}};
-};
+#get '/personaggi' => sub {
+#    my $main = Strehler::Element::Category->new(name => 'personaggi');
+#    my @subs = $main->subcategories();
+#    my @data;
+#    for(@subs)
+#    {
+#        my $cat = $_;
+#        my %el = $cat->get_basic_data();
+#        $el{'title'} = ucfirst($el{'title'});
+#        my $images = Strehler::Element::Image::get_list({ category_id => $el{'id'}});
+#        $el{'image'} = $images->{'to_view'}->[0]->{'source'};
+#        push @data, \%el;
+#    }
+#    template 'characters', { page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire",
+#                             nations => \@data };
+#};
+#get '/personaggi/:nation' => sub {
+#    my $n = params->{nation};
+#    my $nation = Strehler::Element::Category->new(name => $n);
+#    my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100});
+#    template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
+#                                  characters => $characters->{'to_view'}};
+#};
 
 get '/autore' => sub {
     template 'author', { page_title => 'Autore', page_description => "Breve biografia dell'autore di Valerius Demoire" };

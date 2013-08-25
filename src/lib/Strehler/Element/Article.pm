@@ -26,7 +26,15 @@ sub get_form_data
     my $article_row = $self->row;
     my @contents = $article_row->contents;
     my $data;
-    $data->{'category'} = $article_row->category->id;
+    if($article_row->category->parent_category)
+    {
+        $data->{'category'} = $article_row->category->parent_category->id;
+        $data->{'subcategory'} = $article_row->category->id;
+    }
+    else
+    {
+       $data->{'category'} = $article_row->category->id;
+    }
     $data->{'image'} = $article_row->image;
     $data->{'order'} = $article_row->display_order;
     $data->{'publish_date'} = $article_row->publish_date;
@@ -366,7 +374,16 @@ sub save_form
     
     my $article_row;
     my $order;
-    if($form->param_value('category'))
+    my $category = undef;
+    if($form->param_value('subcategory'))
+    {
+        $category = $form->param_value('subcategory');
+    }
+    elsif($form->param_value('category'))
+    {
+        $category = $form->param_value('category');
+    }
+    if($category)
     {
         $order = $form->param_value('order');
     }
@@ -374,7 +391,7 @@ sub save_form
     {
         $order = undef;
     }
-    my $article_data ={ image => $form->param_value('image'), category => $form->param_value('category'), display_order => $order, publish_date => $form->param_value('publish_date') };
+    my $article_data ={ image => $form->param_value('image'), category => $category, display_order => $order, publish_date => $form->param_value('publish_date') };
     if($id)
     {
         $article_row = schema->resultset('Article')->find($id);

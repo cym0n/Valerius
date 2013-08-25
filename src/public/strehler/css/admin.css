@@ -39,4 +39,12 @@
 {
     margin-top: 30px;
 }
+.parent_category
+{
+    background: #eee;
+}
+.table .sub_category
+{
+    padding-left: 40px;
+}
 

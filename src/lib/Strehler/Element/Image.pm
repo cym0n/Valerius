@@ -22,7 +22,15 @@ sub get_form_data
     my $img_row = $self->row;
     my @descriptions = $img_row->descriptions;
     my $data;
-    $data->{'category'} = $img_row->category->id;
+    if($img_row->category->parent_category)
+    {
+        $data->{'category'} = $img_row->category->parent_category->id;
+        $data->{'subcategory'} = $img_row->category->id;
+    }
+    else
+    {
+       $data->{'category'} = $img_row->category->id;
+    }
     for(@descriptions)
     {
         my $d = $_;
@@ -137,6 +145,17 @@ sub save_form
         $path = 'public' . $ref;
         $img->copy_to($path);
     }
+    my $category;
+    if($form->param_value('subcategory'))
+    {
+        $category = $form->param_value('subcategory');
+        debug "Subcategory detected: $category"
+    }
+    elsif($form->param_value('category'))
+    {
+        $category = $form->param_value('category');
+        debug "Category detected: $category"
+    }
     my $img_row;
 
     if($id)
@@ -144,17 +163,17 @@ sub save_form
         $img_row = schema->resultset('Image')->find($id);
         if($img)
         {
-            $img_row->update({ image => $ref, category => $form->param_value('category') });
+            $img_row->update({ image => $ref, category => $category });
         }
         else
         {
-            $img_row->update({ category => $form->param_value('category') });
+            $img_row->update({ category => $category });
         }
         $img_row->descriptions->delete_all();
     }
     else
     {
-        $img_row = schema->resultset('Image')->create({ image => $ref, category => $form->param_value('category') });
+        $img_row = schema->resultset('Image')->create({ image => $ref, category => $category });
     }
     my @languages = @{config->{languages}};
     for(@languages)

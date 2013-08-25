@@ -95,7 +95,7 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->belongs_to(
   "parent_category",
-  "Site::SiteDB::Result::Category",
+  "Valerius::ValeriusDB::Result::Category",
   { id => "parent" },
   {
     is_deferrable => 1,
@@ -107,7 +107,7 @@ __PACKAGE__->belongs_to(
 
 __PACKAGE__->has_many(
   "subcategories",
-  "Site::SiteDB::Result::Category",
+  "Valerius::ValeriusDB::Result::Category",
   { "foreign.parent" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );

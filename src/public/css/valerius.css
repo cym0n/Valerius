@@ -200,3 +200,15 @@ a:focus {
 {
     color: #fff;
 }
+#nationcolumn img
+{
+    margin-right: 20px;
+}
+#nationcolumn h1
+{
+    margin-bottom: 50px;
+}
+#nationcolumn p
+{
+    margin-bottom: 30px;
+}

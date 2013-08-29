@@ -116,12 +116,19 @@ get '/personaggi' => sub {
 get '/personaggi/:nation' => sub {
     my $n = params->{nation};
     my $nation = Strehler::Element::Category->new(parent => 'personaggi', category => $n);
-    my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc'});
-    my $images = Strehler::Element::Image::get_list({ category_id => $nation->get_attr('id')});
-    my $image = $images->{'to_view'}->[0]->{'source'};
+    if(! $nation->exists())
+    {
+        send_error("Nazione inesistente", 404);
+    }
+    else
+    {
+        my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc'});
+        my $images = Strehler::Element::Image::get_list({ category_id => $nation->get_attr('id')});
+        my $image = $images->{'to_view'}->[0]->{'source'};
         
-    template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
-                                  characters => $characters->{'to_view'}, nation => ucfirst($n), image => $image};
+        template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
+                                      characters => $characters->{'to_view'}, nation => ucfirst($n), image => $image};
+    }
 };
 
 get '/autore' => sub {

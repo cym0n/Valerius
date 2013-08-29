@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Valerius Demoire - [% page_title %]</title>
 <meta name="description" content="[% page_description %]" />
+<meta name="keywords" content="valerius, demoire, steampunk, guerra, romanzo, fantascienza, robot, giganti di ferro, myrmidon, Francia, Inghilterra, Germania, Spagna, Italia, vapore, magia, avventura, spada, puntate, capitoli" />
+
 <link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" href="[% request.uri_base %]/css/valerius.css" />
 <link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap-responsive.css" />

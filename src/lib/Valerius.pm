@@ -122,7 +122,7 @@ get '/personaggi/:nation' => sub {
     }
     else
     {
-        my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc'});
+        my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
         my $images = Strehler::Element::Image::get_list({ category_id => $nation->get_attr('id')});
         my $image = $images->{'to_view'}->[0]->{'source'};
         

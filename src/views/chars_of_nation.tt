@@ -1,3 +1,8 @@
-[% FOREACH c IN characters %] 
-<p><strong>[% c.title %]</strong>: [% c.text %]</p>
-[% END %]
+<div class="content">
+    <div id="nationcolumn">
+        <h1><img src="[% image %]" />[% nation %]</h1>
+        [% FOREACH c IN characters %] 
+            <p><strong>[% c.title %]</strong>: [% c.text %]</p>
+        [% END %]
+    </div>
+</div>

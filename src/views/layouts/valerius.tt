@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=[% settings.charset %]" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Valerius Demoire - [% page_title %]</title>
+<title>Valerius Demoire, romanzo steampunk - [% page_title %]</title>
 <meta name="description" content="[% page_description %]" />
 <meta name="keywords" content="valerius, demoire, steampunk, guerra, romanzo, fantascienza, robot, giganti di ferro, myrmidon, Francia, Inghilterra, Germania, Spagna, Italia, vapore, magia, avventura, spada, puntate, capitoli" />
 
@@ -32,6 +32,7 @@
             <ul class="nav">
                 <li class="span2 hidden-phone"><a href="/romanzo">Romanzo</a></li>
                 <li class="span2 hidden-phone"><a href="/personaggi">Personaggi</a></li>
+                <li class="span2 hidden-phone"><a href="/timeline">Timeline</a></li>
                 <li class="span2 hidden-phone"><a href="/autore">Autore</a></li>
                 <li class="span2 visible-phone"><a href="/romanzo/ultimo-capitolo">Ultimo capitolo</a></li>
                 <li class="span2 visible-phone"><a href="/romanzo/primo-capitolo">Primo capitolo</a></li>
@@ -45,6 +46,7 @@
         <ul class="nav">
             <li class="span2"><a href="/romanzo">Romanzo</a></li>
             <li class="span2"><a href="/personaggi">Personaggi</a></li>
+            <li class="span2"><a href="/timeline">Timeline</a></li>
             <li class="span2"><a href="/autore">Autore</a></li>
         </ul>
     </div>

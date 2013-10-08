@@ -32,7 +32,7 @@
             <ul class="nav">
                 <li class="span2 hidden-phone"><a href="/romanzo">Romanzo</a></li>
                 <li class="span2 hidden-phone"><a href="/personaggi">Personaggi</a></li>
-                <li class="span2 hidden-phone"><a href="/timeline">Timeline</a></li>
+                <!--li class="span2 hidden-phone"><a href="/timeline">Timeline</a></li-->
                 <li class="span2 hidden-phone"><a href="/autore">Autore</a></li>
                 <li class="span2 visible-phone"><a href="/romanzo/ultimo-capitolo">Ultimo capitolo</a></li>
                 <li class="span2 visible-phone"><a href="/romanzo/primo-capitolo">Primo capitolo</a></li>
@@ -46,7 +46,7 @@
         <ul class="nav">
             <li class="span2"><a href="/romanzo">Romanzo</a></li>
             <li class="span2"><a href="/personaggi">Personaggi</a></li>
-            <li class="span2"><a href="/timeline">Timeline</a></li>
+            <!--li class="span2"><a href="/timeline">Timeline</a></li-->
             <li class="span2"><a href="/autore">Autore</a></li>
         </ul>
     </div>

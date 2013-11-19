@@ -3,6 +3,7 @@ package Strehler::Element::Image;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Strehler::Element::Tag; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
 has row => (
@@ -38,6 +39,7 @@ sub get_form_data
         $data->{'title_' . $lan} = $d->title;
         $data->{'description_' . $lan} = $d->description;
     }
+    $data->{'tags'} = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'image');
     return $data;
 }
 sub main_title
@@ -62,6 +64,17 @@ sub get_basic_data
     $data{'source'} = $self->get_attr('image');
     $data{'category'} = $self->row->category->category;
     return %data;
+}
+sub get_tags
+{
+    my $self = shift;
+    return Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'image');
+}
+sub src
+{
+    my $self = shift;
+    #just a wrapper for templates
+    return $self->get_attr('image');
 }
 sub delete
 {
@@ -100,6 +113,16 @@ sub get_list
     $args{'order_by'} ||= 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
+    
+    my $no_paging = 0;
+    my $default_page = 1;
+    if($args{'entries_per_page'} == -1)
+    {
+        $args{'entries_per_page'} = undef;
+        $default_page = undef;
+        $no_paging = 1;
+    }
+
     my $search_criteria = undef;
 
     #Images have no publish logic
@@ -107,24 +130,52 @@ sub get_list
     #{
     #    $search_criteria->{'published'} = $args{'published'};
     #}
-
+    if(exists $args{'tag'} && $args{'tag'})
+    {
+        my $ids = schema->resultset('Tag')->search({tag => $args{'tag'}, item_type => 'image'})->get_column('item_id');
+        $search_criteria->{'id'} = { -in => $ids->as_query };
+    }
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
     {
         my $category = schema->resultset('Category')->find( { id => $args{'category_id'} } );
-        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+        if(! $category)
+        {
+            return {'to_view' => [], 'last_page' => 1 };
+        }
+        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
     elsif(exists $args{'category'} && $args{'category'})
     {
-        my $category = schema->resultset('Category')->find( { category => $args{'category'} } );
-        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+       my $category;
+       my $category_obj = Strehler::Element::Category::explode_name($args{'category'});
+       if(! $category_obj->exists())
+       {
+           return {'to_view' => [], 'last_page' => 1 };
+       }
+       else
+       {
+           $category = $category_obj->row;
+       }
+       $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
     else
     {
-        $rs = schema->resultset('Image')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'}});
+        $rs = schema->resultset('Image')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
     }
-    my $pager = $rs->pager();
-    my $elements = $rs->page($args{'page'});
+    my $elements;
+    my $last_page;
+    if($no_paging)
+    {
+        $elements = $rs;
+        $last_page = 1;
+    }
+    else
+    {
+        my $pager = $rs->pager();
+        $elements = $rs->page($args{'page'});
+        $last_page = $pager->last_page();
+    }
     my @to_view;
     for($elements->all())
     {
@@ -132,7 +183,7 @@ sub get_list
         my %el = $img->get_basic_data();
         push @to_view, \%el;
     }
-    return {'to_view' => \@to_view, 'last_page' => $pager->last_page()};
+    return {'to_view' => \@to_view, 'last_page' => $last_page};
 }
 sub exists
 {
@@ -194,6 +245,7 @@ sub save_form
         my $lan = $_;
         $img_row->descriptions->create( { title => $form->param_value('title_' . $lan), description => $form->param_value('description_' . $lan), language => $lan }) if($form->param_value('title_' . $lan) || $form->param_value('description_' . $lan));;
     }
+    Strehler::Element::Tag::save_tags($form->param_value('tags'), $img_row->id, 'image');
     return $img_row->id;     
 }
 

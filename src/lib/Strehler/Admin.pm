@@ -20,7 +20,10 @@ hook before => sub {
     if((! session 'user') && request->path_info ne dancer_app->prefix . '/login')
     {
         session redir_url => request->path_info;
-        redirect dancer_app->prefix . '/login';
+        my $redir = redirect(dancer_app->prefix . '/login');
+        context->response->is_halted(0);
+        return $redir;
+        #redirect dancer_app->prefix . '/login';
     }
 };
 
@@ -69,11 +72,17 @@ any '/login' => sub {
             session 'user' => $params_hashref->{'user'};
             if( session 'redir_url' )
             {
-                redirect session 'redir_url';
+                my $redir = redirect(session 'redir_url');
+                context->response->is_halted(0);
+                return $redir;
+                #redirect session 'redir_url';
             }
             else
             {
-                redirect dancer_app->prefix . '/';
+                my $redir = redirect(dancer_app->prefix . '/');
+                context->response->is_halted(0);
+                return $redir;
+                #redirect dancer_app->prefix . '/';
             }
         }
         else
@@ -110,6 +119,7 @@ any '/image/add' => sub
 {
     my $form = form_image('add');
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -144,7 +154,7 @@ get '/image/edit/:id' => sub {
     my $form = form_image('edit', $form_data->{'category'});
     $form->default_values($form_data);
     $form = bootstrap_divider($form);
-    template "admin/image", { form => $form->render(), img_source => $image->get_attr('image') }
+    template "admin/image", { id => $id, form => $form->render(), img_source => $image->get_attr('image') }
 };
 
 post '/image/edit/:id' => sub
@@ -152,6 +162,7 @@ post '/image/edit/:id' => sub
     my $form = form_image('edit');
     my $id = params->{id};
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     my $message;
     if($form->submitted_and_valid)
@@ -170,6 +181,38 @@ ajax '/image/src/:id' => sub
     my $id = params->{id};
     my $img = Strehler::Element::Image->new($id);
     return $img->get_attr('image');
+};
+
+ajax '/image/tagform/:id?' => sub
+{
+    if(params->{id})
+    {
+        my $image = Strehler::Element::Image->new(params->{id});
+        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($image->get_attr('category'), 'image');
+        my @tags = split(',', $image->get_tags());
+        my @out;
+        if($#category_tags > -1)
+        {
+            foreach my $c_t (@category_tags)
+            {
+                my $default = 0;
+                if (grep {$_ eq $c_t->tag} @tags) 
+                {
+                    $default = 1;
+                }
+                push @out, { tag => $c_t->tag, default_tag => $default };
+            }
+            template 'admin/configured_tags', { tags => \@out };
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+           template 'admin/open_tags';
+    }
 };
 
 
@@ -201,12 +244,15 @@ any '/article/add' => sub
 {
     my $form = form_article(); 
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
         Strehler::Element::Article::save_form(undef, $form);
         redirect dancer_app->prefix . '/article/list';
     }
+    my $fake_tags = $form->get_element({ name => 'tags'});
+    $form->remove_element($fake_tags) if($fake_tags);
     template "admin/article", { form => $form->render() }
 };
 
@@ -216,7 +262,7 @@ get '/article/edit/:id' => sub {
     my $form_data = $article->get_form_data();
     my $form = form_article($form_data->{'category'});
     $form->default_values($form_data);
-    template "admin/article", { form => $form->render() }
+    template "admin/article", { id => $id, form => $form->render() }
 };
 
 post '/article/edit/:id' => sub
@@ -224,6 +270,7 @@ post '/article/edit/:id' => sub
     my $form = form_article();
     my $id = params->{id};
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -261,6 +308,37 @@ get '/article/turnoff/:id' => sub
     $article->unpublish();
     redirect dancer_app->prefix . '/article/list';
 };
+ajax '/article/tagform/:id?' => sub
+{
+    if(params->{id})
+    {
+        my $article = Strehler::Element::Article->new(params->{id});
+        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($article->get_attr('category'), 'article');
+        my @tags = split(',', $article->get_tags());
+        my @out;
+        if($#category_tags > -1)
+        {
+            foreach my $c_t (@category_tags)
+            {
+                my $default = 0;
+                if (grep {$_ eq $c_t->tag} @tags) 
+                {
+                    $default = 1;
+                }
+                push @out, { tag => $c_t->tag, default_tag => $default };
+            }
+            template 'admin/configured_tags', { tags => \@out };
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+           template 'admin/open_tags';
+    }
+};
 
 #Categories
 
@@ -276,7 +354,7 @@ any '/category/list' => sub
 
     #THE FORM
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/category.yml' );
+    $form->load_config_file( 'forms/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
     $parent->options(Strehler::Element::Category::make_select());
     my $params_hashref = params;
@@ -286,7 +364,42 @@ any '/category/list' => sub
         my $new_category = Strehler::Element::Category::save_form($form);
         redirect dancer_app->prefix . '/category/list';
     }
-    template "admin/category", { categories => $to_view, form => $form };
+    template "admin/category_list", { categories => $to_view, form => $form };
+};
+
+any '/category/add' => sub
+{
+    my $form = form_category();
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        Strehler::Element::Category::save_form(undef, $form);
+        redirect dancer_app->prefix . '/category/list'; 
+    }
+    $form = bootstrap_divider($form);
+    template "admin/category", { form => $form->render() }
+};
+get '/category/edit/:id' => sub {
+    my $id = params->{id};
+    my $category = Strehler::Element::Category->new($id);
+    my $form_data = $category->get_form_data();
+    my $form = form_category();
+    $form->default_values($form_data);
+    template "admin/category", { form => $form->render() }
+};
+post '/category/edit/:id' => sub
+{
+    my $form = form_category();
+    my $id = params->{id};
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        Strehler::Element::Category::save_form($id, $form);
+        redirect dancer_app->prefix . '/category/list';
+    }
+    template "admin/category", { form => $form->render() }
 };
 
 get '/category/delete/:id' => sub
@@ -344,6 +457,25 @@ get '/category/select' => sub
         return 0;
     }
 };
+ajax '/category/tagform/:type/:id?' => sub
+{
+    if(params->{id})
+    {
+        my @tags = Strehler::Element::Tag::get_configured_tags_for_template(params->{id}, params->{type});
+        if($#tags > -1)
+        {
+           template 'admin/configured_tags', { tags => \@tags };
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+        template 'admin/open_tags';
+    }
+};
 
 ##### Helpers #####
 # They only manipulate forms rendering and manage login
@@ -388,13 +520,46 @@ sub form_article
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
     my $default_language = config->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    $form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
+    #$form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
     $image->options(Strehler::Element::Image::make_select());
     my $category = $form->get_element({ name => 'category'});
     $category->options(Strehler::Element::Category::make_select());
     my $subcategory = $form->get_element({ name => 'subcategory'});
     $subcategory->options(Strehler::Element::Category::make_select($has_sub));
+    return $form;
+}
+
+sub form_category
+{
+    my $form = HTML::FormFu->new;
+    $form->load_config_file( 'forms/admin/category.yml' );
+    my $category = $form->get_element({ name => 'parent'});
+    $category->options(Strehler::Element::Category::make_select());
+    return $form;
+}
+sub tags_for_form
+{
+    my $form = shift;
+    my $params_hashref = shift;
+    if($params_hashref->{'configured-tag'})
+    {
+        if(ref($params_hashref->{'configured-tag'}) eq 'ARRAY')
+        {
+            $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
+        }
+        else
+        {
+            $params_hashref->{'tags'} = $params_hashref->{'configured-tag'};
+        }
+        my $subcategory = $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+    }
+    elsif($params_hashref->{'tags'})
+    { 
+        my $subcategory = $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+    }
     return $form;
 }
 

@@ -1,8 +1,10 @@
 package Strehler::Element::Article;
 
+
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Strehler::Element::Tag; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
 has row => (
@@ -45,6 +47,7 @@ sub get_form_data
         $data->{'title_' . $lan} = $d->title;
         $data->{'text_' . $lan} = $d->text;
     }
+    $data->{'tags'} = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'article');
     return $data;
 }
 sub main_title
@@ -85,6 +88,12 @@ sub get_ext_data
     $data{'display_order'} = $self->get_attr('display_order');
     $data{'publish_date'} = $self->publish_date();
     return %data;
+}
+sub get_tags
+{
+    my $self = shift;
+    my $tags = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'article');
+    return $tags;
 }
 sub next_in_category_by_order
 {
@@ -331,28 +340,68 @@ sub get_list
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
     $args{'language'} ||= config->{default_language};
+
+    my $no_paging = 0;
+    my $default_page = 1;
+    if($args{'entries_per_page'} == -1)
+    {
+        $args{'entries_per_page'} = undef;
+        $default_page = undef;
+        $no_paging = 1;
+    }
+
     my $search_criteria = undef;
     if(exists $args{'published'})
     {
         $search_criteria->{'published'} = $args{'published'};
     }
+    if(exists $args{'tag'} && $args{'tag'})
+    {
+        my $ids = schema->resultset('Tag')->search({tag => $args{'tag'}, item_type => 'article'})->get_column('item_id');
+        $search_criteria->{'id'} = { -in => $ids->as_query };
+    }
+
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
     {
         my $category = schema->resultset('Category')->find( { id => $args{'category_id'} } );
-        $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+        if(! $category)
+        {
+            return {'to_view' => [], 'last_page' => 1 };
+        }
+        $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
     elsif(exists $args{'category'} && $args{'category'})
     {
-        my $category = schema->resultset('Category')->find( { category => $args{'category'} } );
-        $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+        my $category;
+        my $category_obj = Strehler::Element::Category::explode_name($args{'category'});
+        if(! $category_obj->exists())
+        {
+            return {'to_view' => [], 'last_page' => 1 };
+        }
+        else
+        {
+            $category = $category_obj->row;
+        }
+        $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
     else
     {
-        $rs = schema->resultset('Article')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'}});
+        $rs = schema->resultset('Article')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
     }
-    my $pager = $rs->pager();
-    my $elements = $rs->page($args{'page'});
+    my $elements;
+    my $last_page;
+    if($no_paging)
+    {
+        $elements = $rs;
+        $last_page = 1;
+    }
+    else
+    {
+        my $pager = $rs->pager();
+        $elements = $rs->page($args{'page'});
+        $last_page = $pager->last_page();
+    }
     my @to_view;
     for($elements->all())
     {
@@ -368,7 +417,7 @@ sub get_list
         }
         push @to_view, \%el;
     }
-    return {'to_view' => \@to_view, 'last_page' => $pager->last_page()};
+    return {'to_view' => \@to_view, 'last_page' => $last_page};
 }
 
 
@@ -411,11 +460,33 @@ sub save_form
     for(@languages)
     {
         my $lan = $_;
-        if($form->param_value('title_' . $lan) && $form->param_value('text_' . $lan))
+        my $title;
+        my $text;
+        if($form->param_value('title_' . $lan) =~ /^ *$/)
+        {
+            $title = undef;
+        }
+        else
+        {
+            $title = $form->param_value('title_' . $lan);
+        }
+        if($form->param_value('text_' . $lan) =~ /^ *$/)
+        {
+            $text = undef;
+        }
+        else
+        {
+            $text = $form->param_value('text_' . $lan);
+        }
+        if($title)
         {
             my $slug = $article_row->id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
-            $article_row->contents->create( { title => $form->param_value('title_' . $lan), text => $form->param_value('text_' . $lan), slug => $slug, language => $lan }) 
+            $article_row->contents->create( { title => $title, text => $text, slug => $slug, language => $lan }) 
         }
+    }
+    if($form->param_value('tags'))
+    {
+        Strehler::Element::Tag::save_tags($form->param_value('tags'), $article_row->id, 'article');
     }
     return $article_row->id;  
 }

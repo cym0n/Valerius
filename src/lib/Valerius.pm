@@ -28,14 +28,14 @@ hook before_template_render => sub {
 get '/' => sub {
     my $news = Strehler::Element::Article::get_last_by_date('notizie');
     my $chapter = Strehler::Element::Article::get_last_by_order('romanzo');
-    my %news_data = undef;
+    my %news_data = ();
     if($news)
     {
         %news_data = $news->get_ext_data('it');
         $news_data{'text'} = markdown($news_data{'text'});
         $news_data{'publish_date'} = $news_data{'publish_date'}->strftime('%d-%m-%Y');
     }
-    my %chapter_data = undef;
+    my %chapter_data = ();
     if($chapter)
     {
         %chapter_data = $chapter->get_ext_data('it');
@@ -131,6 +131,13 @@ get '/personaggi/:nation' => sub {
     }
 };
 
+get '/timeline' => sub {
+    my $history = Strehler::Element::Article::get_list({ category => 'timeline', ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
+    markdown_all($history);
+    template "timeline", { page_title => 'Timeline', page_description => 'La cronologia degli avvenimenti dell\'universo di Valerius Demoire',
+                           history => $history->{'to_view'} };
+};
+
 get '/autore' => sub {
     template 'author', { page_title => 'Autore', page_description => "Breve biografia dell'autore di Valerius Demoire" };
 };
@@ -139,6 +146,16 @@ get '/closed' => sub {
     template 'closed', {}, {layout => 'valerius_light'};
 };
 
+sub markdown_all
+{
+    my $data = shift;
+    my @markdowned;
+    for(@{$data->{'to_view'}})
+    {
+        my $el = $_;
+        $el->{'text'} = markdown($el->{'text'});
+    }    
+}
 
 1;
 

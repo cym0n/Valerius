@@ -6,6 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Valerius Demoire, romanzo steampunk - [% page_title %]</title>
 <meta name="description" content="[% page_description %]" />
+<meta property="og:url" content="http://www.valeriusdemoire.it" />
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Valerius Demoire"/>
+<meta itemprop="name" content="Valerius Demoire"/>
+
 <meta name="keywords" content="valerius, demoire, steampunk, guerra, romanzo, fantascienza, robot, giganti di ferro, myrmidon, Francia, Inghilterra, Germania, Spagna, Italia, vapore, magia, avventura, spada, puntate, capitoli" />
 
 <link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap.min.css" />
@@ -23,6 +28,17 @@
 
 </head>
 <body>
+<div id="fb-root"></div>
+<script>
+      (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/it_IT/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+</script>
+  
 <div id="header">
     <div class="navbar">
         <div class="navbar-inner">
@@ -36,9 +52,14 @@
                 <li class="span2 hidden-phone"><a href="/autore">Autore</a></li>
                 <li class="span2 visible-phone"><a href="/romanzo/ultimo-capitolo">Ultimo capitolo</a></li>
                 <li class="span2 visible-phone"><a href="/romanzo/primo-capitolo">Primo capitolo</a></li>
+                <li class="span2 facebook">
+                    <span class="share" style="font: 18px Arial,sans-serif;color:#FFF"></span><fb:like href="https://www.facebook.com/valeriudemoire" send="false" layout="button_count" width="450" show_faces="false"></fb:like>
+                </li>
             </ul>
         </div>
     </div>
+</div>
+<div class="facebook">
 </div>
 [% content %]
 <div class="navbar visible-phone">

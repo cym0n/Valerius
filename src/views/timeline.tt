@@ -1,0 +1,14 @@
+<div class="content">
+    <div id="timelinecolumn">
+        [% FOREACH h IN history %] 
+        <div>
+            <div class="timeline_year">
+                <p>[% h.display_order %]</p>
+            </div>
+            <div class="timeline_events">
+                [% h.text %]
+            </div>
+        </div>
+        [% END %]
+    </div>
+</div>

@@ -62,6 +62,14 @@ a:focus {
     margin-bottom: 0;
     padding-top: 0px;
 }
+#news a {
+    color: #8B2323;
+    text-decoration: none;
+}
+a:hover,
+a:focus {
+    color: #EE9A00;
+}
 #shoulder
 {
     vertical-align: top;

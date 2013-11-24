@@ -1,0 +1,6 @@
+<div class="span10 btn-group btn-group-vertical">
+    <a href="/admin/article/list?catname=romanzo" class="btn">Gestisci il romanzo</button>
+    <a href="https://www.facebook.com/valeriudemoire" target="_blank" class="btn">Pagina Facebook</a>
+    <a href="http://www.google.com/analytics/" target="_blank" class="btn">Google Analytics</a>
+</div>
+    

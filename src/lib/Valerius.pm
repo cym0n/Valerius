@@ -26,8 +26,8 @@ hook before_template_render => sub {
     };
 
 get '/' => sub {
-    my $news = Strehler::Element::Article::get_last_by_date('notizie');
-    my $chapter = Strehler::Element::Article::get_last_by_order('romanzo');
+    my $news = Strehler::Element::Article->get_last_by_date('notizie');
+    my $chapter = Strehler::Element::Article->get_last_by_order('romanzo');
     my %news_data = ();
     if($news)
     {
@@ -50,26 +50,26 @@ get '/romanzo' => sub {
     my $entries_per_page = 20;
     my $page = params->{page} || 1;
     my $order = params->{order} || 'desc';
-    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
+    my $elements = Strehler::Element::Article->get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
     template "novel", { page_title => 'Romanzo', page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire',
                         chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
 
 };
 
 get '/romanzo/ultimo-capitolo' => sub {
-    my $last = Strehler::Element::Article::get_last_by_order('romanzo');
+    my $last = Strehler::Element::Article->get_last_by_order('romanzo');
     my $slug = $last->get_attr_multilang('slug', 'it');
     forward '/romanzo/' . $slug;
 };
 get '/romanzo/primo-capitolo' => sub {
-    my $last = Strehler::Element::Article::get_first_by_order('romanzo');
+    my $last = Strehler::Element::Article->get_first_by_order('romanzo');
     my $slug = $last->get_attr_multilang('slug', 'it');
     forward '/romanzo/' . $slug;
 };
 
 get '/romanzo/:slug' => sub {
     my $slug = params->{slug};
-    my $chapter = Strehler::Element::Article::get_by_slug($slug, 'it');
+    my $chapter = Strehler::Element::Article->get_by_slug($slug, 'it');
     if( ! $chapter->exists() || $chapter->category() ne 'romanzo')
     {
         send_error("Capitolo inesistente", 404);
@@ -97,7 +97,7 @@ get '/romanzo/:slug' => sub {
 
 
 get '/personaggi' => sub {
-    my $main = Strehler::Element::Category->new(name => 'personaggi');
+    my $main = Strehler::Meta::Category->new(name => 'personaggi');
     my @subs = $main->subcategories();
     my @data;
     for(@subs)
@@ -105,7 +105,7 @@ get '/personaggi' => sub {
         my $cat = $_;
         my %el = $cat->get_basic_data();
         $el{'title'} = ucfirst($el{'title'});
-        my $images = Strehler::Element::Image::get_list({ category_id => $el{'id'}});
+        my $images = Strehler::Element::Image->get_list({ category_id => $el{'id'}});
         $el{'image'} = $images->{'to_view'}->[0]->{'source'};
         push @data, \%el;
     }
@@ -115,15 +115,15 @@ get '/personaggi' => sub {
 
 get '/personaggi/:nation' => sub {
     my $n = params->{nation};
-    my $nation = Strehler::Element::Category->new(parent => 'personaggi', category => $n);
+    my $nation = Strehler::Meta::Category->new(parent => 'personaggi', category => $n);
     if(! $nation->exists())
     {
         send_error("Nazione inesistente", 404);
     }
     else
     {
-        my $characters = Strehler::Element::Article::get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
-        my $images = Strehler::Element::Image::get_list({ category_id => $nation->get_attr('id')});
+        my $characters = Strehler::Element::Article->get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
+        my $images = Strehler::Element::Image->get_list({ category_id => $nation->get_attr('id')});
         my $image = $images->{'to_view'}->[0]->{'source'};
         
         template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
@@ -132,7 +132,7 @@ get '/personaggi/:nation' => sub {
 };
 
 get '/timeline' => sub {
-    my $history = Strehler::Element::Article::get_list({ category => 'timeline', ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
+    my $history = Strehler::Element::Article->get_list({ category => 'timeline', ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
     markdown_all($history);
     template "timeline", { page_title => 'Timeline', page_description => 'La cronologia degli avvenimenti dell\'universo di Valerius Demoire',
                            history => $history->{'to_view'} };

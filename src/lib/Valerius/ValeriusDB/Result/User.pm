@@ -47,11 +47,17 @@ __PACKAGE__->table("USERS");
   is_nullable: 1
   size: 50
 
-=head2 password
+=head2 password_hash
 
   data_type: 'char'
   is_nullable: 1
-  size: 32
+  size: 31
+
+=head2 password_salt
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 22
 
 =head2 role
 
@@ -66,8 +72,10 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "user",
   { data_type => "varchar", is_nullable => 1, size => 50 },
-  "password",
-  { data_type => "char", is_nullable => 1, size => 32 },
+  "password_hash",
+  { data_type => "char", is_nullable => 1, size => 31 },
+  "password_salt",
+  { data_type => "char", is_nullable => 1, size => 22 },
   "role",
   { data_type => "varchar", is_nullable => 1, size => 50 },
 );
@@ -85,8 +93,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-03 15:21:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QjrAjeNyYjuwugSCq+Kvbw
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-03 15:29:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wlMpH4wJIt5bDC9jsJr7YA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

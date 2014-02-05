@@ -3,7 +3,7 @@ package Strehler::Meta::Category;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
-use Data::Dumper;
+use Strehler::Helpers;
 
 has row => (
     is => 'ro',
@@ -34,7 +34,7 @@ sub BUILDARGS {
         my $main = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
         if($main)
         {
-            $category = $main->subcategories->find({ category => $hash_args{'category'}});
+            $category = $main->categories->find({ category => $hash_args{'category'}});
         }
         else
         {
@@ -48,7 +48,7 @@ sub subcategories
 {
     my $self = shift;
     my @subs;
-    for($self->row->subcategories)
+    for($self->row->categories)
     {
         push @subs, Strehler::Meta::Category->new('row', $_);
     }
@@ -83,7 +83,19 @@ sub has_elements
 {
     my $self = shift;
     my $category_row = $self->row;
-    return $category_row->images->count() > 0 || $category_row->articles->count() > 0
+    for my $e (Strehler::Helpers::get_categorized_entities())
+    {
+        my $class = Strehler::Helpers::get_entity_attr($e, 'class');
+        eval "require $class";
+        my $accessor = $class->category_accessor($category_row);
+        return 1 if($category_row->$accessor->count() > 0);
+    }
+    return 0;
+}
+sub is_parent
+{
+   my $self = shift;
+   return $self->row->categories->count() > 0;  
 }
 sub max_article_order
 {
@@ -95,10 +107,8 @@ sub max_article_order
 sub delete
 {
     my $self = shift;
+    $self->row->configured_tags->delete_all();
     $self->row->delete();
-    $self->row->images->update( { category => undef } );
-    $self->row->articles->update( { category => undef } );
-
 }
 
 sub get_attr
@@ -108,14 +118,14 @@ sub get_attr
     return $self->row->get_column($attr);
 }
 
-#Static helpers
 
 sub make_select
 {
+    my $self = shift;
     my $parent = shift;
     my @category_values = schema->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
-    push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
+    push @category_values_for_select, { value => undef, label => "-- select --" }; 
     for(@category_values)
     {
         push @category_values_for_select, { value => $_->id, label => $_->category }
@@ -125,6 +135,7 @@ sub make_select
 
 sub get_list
 {
+    my $self = shift;
     my $params = shift;
     my %args;
     if($params)
@@ -152,6 +163,7 @@ sub get_list
 }
 sub explode_tree
 {
+    my $self = shift;
     my $cat_param = shift;    
     my $cat = undef;
     my $subcat = undef;
@@ -177,6 +189,7 @@ sub explode_tree
 }
 sub explode_name
 {
+    my $self = shift;
     my $category_path = shift;
     my @cats = split '/', $category_path;
     if(exists $cats[1])
@@ -215,7 +228,7 @@ sub get_form_data
     my $data;
     $data->{'category'} = $row->category;
     $data->{'parent'} = $row->parent;
-    my $configured_tags = Strehler::Meta::Tag::get_configured_tags($row->id, \@entities);
+    my $configured_tags = Strehler::Meta::Tag->get_configured_tags($row->id, \@entities);
     for(@entities)
     {
        my $e = $_;
@@ -230,6 +243,7 @@ sub get_form_data
 
 sub save_form
 {
+    my $self = shift;
     my $id = shift;
     my $form = shift;
     my $ents = shift;
@@ -260,8 +274,8 @@ sub save_form
     }
     if($form->param_value('tags-all'))
     {
-        Strehler::Meta::Tag::clean_configured_tags($new_category->id);
-        Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-all'), $form->param_value('default-all'), $new_category->id, 'all');
+        Strehler::Meta::Tag->clean_configured_tags($new_category->id);
+        Strehler::Meta::Tag->save_configured_tags($form->param_value('tags-all'), $form->param_value('default-all'), $new_category->id, 'all');
     }
     else
     {
@@ -273,13 +287,25 @@ sub save_form
             {
                 if(! $cleaned)
                 {
-                    Strehler::Meta::Tag::clean_configured_tags($new_category->id);
+                    Strehler::Meta::Tag->clean_configured_tags($new_category->id);
                     $cleaned = 1;
                 }
-                Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-' . $e), $form->param_value('default-' . $e), $new_category->id, $e);
+                Strehler::Meta::Tag->save_configured_tags($form->param_value('tags-' . $e), $form->param_value('default-' . $e), $new_category->id, $e);
             }
         }
     }
+    return $new_category->id;
+}
+
+sub ext_name
+{
+    my $self = shift;
+    my $category = $self->row->category;
+    if($self->row->parent)
+    {
+        $category = $self->row->parent->category . '/' . $category;
+    }
+    return $category;
 }
 
 

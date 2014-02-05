@@ -4,13 +4,64 @@ use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
-
-use Data::Dumper;
+use Strehler::Meta::Category;
 
 has row => (
     is => 'ro',
 );
 
+sub BUILDARGS {
+   my ( $class, @args ) = @_;
+   my $id = shift @args; 
+   my $article;
+   if(! $id)
+   {
+        $article = undef;
+   }
+   else
+   {
+        $article = schema->resultset($class->ORMObj())->find($id);
+   }
+   return { row => $article };
+};
+
+sub category_accessor
+{
+    my $self = shift;
+    my $category = shift;
+    return $category->can($self->metaclass_data('category_accessor'));
+}
+
+sub item_type
+{
+    my $self = shift;
+    return $self->metaclass_data('item_type');
+}
+
+sub ORMObj
+{
+    my $self = shift;
+    return $self->metaclass_data('ORMObj');
+}
+sub multilang_children
+{
+    my $self = shift;
+    return $self->metaclass_data('multilang_children');
+}
+sub publishable
+{
+    my $self = shift;
+    my $item = $self->metaclass_data('item_type');
+    return 1 if($item eq 'article');
+    if(config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'})
+    {
+        return config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'};
+    }
+    else
+    {
+        return 0;
+    }
+}
 sub exists
 {
     my $self = shift;
@@ -27,8 +78,8 @@ sub delete
 {
     my $self = shift;
     my $children = $self->row->can($self->multilang_children());
-    $self->row->delete();
     $self->row->$children->delete_all() if($children);
+    $self->row->delete();
 }
 
 sub get_attr
@@ -70,32 +121,131 @@ sub has_language
         return 0;
     }
 }
-sub category
-{
-    my $self = shift;
-    return $self->row->category->category;
-}
 sub get_tags
 {
     my $self = shift;
-    my $tags = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), $self->item_type());
+    my $tags = Strehler::Meta::Tag->tags_to_string($self->get_attr('id'), $self->item_type());
     return $tags;
 }
-
-sub category_accessor
+sub get_category_name
 {
     my $self = shift;
-    my $category = shift;
-    print "Call in father";
-    return undef;
+    if($self->row->can('category'))
+    {
+            my $category = Strehler::Meta::Category->new($self->row->category->id);
+            return $category->ext_name();
+    }
+    else
+    {
+        return undef;
+    }
 }
-
-sub item_type
+sub max_category_order
 {
-    return "generic";
+    my $self = shift;
+    my $category_id = shift;
+    my $max;
+    if($category_id)
+    {
+        my $category = Strehler::Meta::Category->new($category_id);
+        my $category_accessor = $self->category_accessor($category->row);
+        $max = $category->row->$category_accessor->search()->get_column('display_order')->max();
+    }
+    else
+    {
+        $max = schema->resultset($self->ORMObj())->search()->get_column('display_order')->max();
+    }
+    return $max || 0;
 }
 
 
+
+
+sub get_basic_data
+{
+    my $self = shift;
+    my %data = $self->row->get_columns;
+    $data{'id'} = $self->get_attr('id');
+    $data{'title'} = $self->main_title;
+    if($self->row->can('category'))
+    {
+        $data{'category'} = $self->row->category->category;
+    }
+    if($self->row->result_source->has_column('published'))
+    {
+        $data{'published'} = $self->get_attr('published');
+    }
+    foreach my $attribute (keys %data)
+    {
+        my $accessor = $self->can($attribute);
+        if($accessor)
+        {
+            $data{$attribute} = $self->$accessor();
+        }
+    }
+    $data{'category_name'} = $self->get_category_name();
+    return %data;
+}
+sub get_ext_data
+{
+    my $self = shift;
+    my $language = shift;
+    my %data;
+    %data = $self->get_basic_data();
+    my $children = $self->row->can($self->multilang_children());
+    if($children)
+    {
+        my $multilang_row = $self->row->$children->find({ language => $language });
+        my %multilang_data = $multilang_row->get_columns;
+        foreach my $attribute (keys %multilang_data)
+        {
+            if($attribute ne 'id' && $attribute ne $self->item_type() && $attribute ne 'language')
+            {
+                my $accessor = $self->can($attribute);
+                if($accessor)
+                {
+                    $data{$attribute} = $self->$accessor($language);
+                }
+                else
+                {
+                    $data{$attribute} = $multilang_data{$attribute};
+                }
+            }
+        } 
+    }
+    return %data;
+}
+
+sub main_title
+{
+    my $self = shift;
+    if($self->row->result_source->has_column('title'))
+    {
+        return $self->get_attr('title');
+    }
+    elsif($self->row->result_source->has_column('name'))
+    {
+        return $self->get_attr('name');
+    }   
+    else
+    {
+        return "[". $self->get_attr('id') . "]";
+    }
+}
+sub publish
+{
+    my $self = shift;
+    return if ! $self->publishable();
+    $self->row->published(1);
+    $self->row->update();
+}
+sub unpublish
+{
+    my $self = shift;
+    return if ! $self->publishable();
+    $self->row->published(0);
+    $self->row->update();
+}
 sub next_in_category_by_order
 {
     my $self = shift;
@@ -103,7 +253,7 @@ sub next_in_category_by_order
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -129,7 +279,7 @@ sub prev_in_category_by_order
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -154,7 +304,7 @@ sub next_in_category_by_date
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -179,7 +329,7 @@ sub prev_in_category_by_date
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -201,89 +351,109 @@ sub get_last_by_order
 {
     my $self = shift;
     my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
     my @chapters = $category->$category_access->search($criteria , { order_by => { -desc => 'display_order' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 sub get_last_by_date
 {
     my $self = shift;
     my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
     my @chapters = $category->$category_access->search( $criteria, { order_by => { -desc => 'publish_date' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 sub get_first_by_order
 {
     my $self = shift;
     my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
     my @chapters = $category->$category_access->search( $criteria, { order_by => { -asc => 'display_order' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 sub get_first_by_date
 {
     my $self = shift;
     my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
     my @chapters = $category->$category_access->search( $criteria, { order_by => { -asc => 'publish_date' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 
 sub get_list
@@ -307,7 +477,7 @@ sub get_list
     }
 
     my $search_criteria = undef;
-    if($self->can('publish'))
+    if($self->publishable())
     {
         if(exists $args{'published'})
         {
@@ -379,6 +549,166 @@ sub get_list
         push @to_view, \%el;
     }
     return {'to_view' => \@to_view, 'last_page' => $last_page};
+}
+
+sub make_select
+{
+    my $self = shift;
+    my $list = $self->get_list( {} );
+    my @category_values_for_select;
+    push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
+    for(@{$list->{to_view}})
+    {
+        push @category_values_for_select, { value => $_->{'id'}, label => $_->{'title'} }
+    }
+    return \@category_values_for_select;
+}
+
+sub get_form_data
+{
+    my $self = shift;
+    my $el_row = $self->row;
+    my %columns = $el_row->get_columns;
+    my $data = \%columns;
+    foreach my $attribute (keys %columns)
+    {
+        if($el_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+        {
+            $data->{$attribute} = $el_row->$attribute;
+        }
+    }
+    if($self->row->can('category')) #Is the element categorized?
+    {
+        if($el_row->category->parent)
+        {
+            $data->{'category'} = $el_row->category->parent->id;
+            $data->{'subcategory'} = $el_row->category->id;
+        }
+        else
+        {
+        $data->{'category'} = $el_row->category->id;
+        }
+    }
+    my $children = $self->row->can($self->multilang_children());
+    if($children)
+    {
+        my @multilang_rows = $self->row->$children;
+        foreach my $ml (@multilang_rows)
+        {
+            my %ml_columns = $ml->get_columns;
+            foreach my $k (keys %ml_columns)
+            {
+                if($k ne 'id' && $k ne $self->item_type() && $k ne 'language')
+                {
+                    foreach my $attribute (keys %columns)
+                    {
+                        my $data_to_save;
+                        if($ml->result_source->column_info($k)->{'data_type'} eq 'timestamp')
+                        {
+                            $data_to_save = $ml->$attribute;
+                        }
+                        else
+                        {
+                            $data_to_save = $ml_columns{$k};
+                        }
+                        $data->{$k . '_' . $ml_columns{'language'}} = $data_to_save;
+                    }
+                }
+            }
+        }
+    }
+    return $data;
+}
+
+sub save_form
+{
+    my $self = shift;
+    my $id = shift;
+    my $form = shift;
+    
+    my $el_row;
+    my $el_data;
+    foreach my $column (schema->resultset($self->ORMObj())->result_source->columns)
+    {
+        if($column ne 'category' && $column ne 'id' && $column ne 'published')
+        {
+            if($form->param_value($column))
+            {
+                $el_data->{$column} = $form->param_value($column);
+            }
+            else
+            {
+                my $accessor = $self->can('save_' . $column);
+                if($accessor)
+                {
+                    $el_data->{$column} = $self->$accessor($id, $form, undef);
+
+                }
+            }
+        }
+        elsif($column eq 'category')
+        {
+            my $category;
+            if($form->param_value('subcategory'))
+            {
+                $category = $form->param_value('subcategory');
+            }
+            elsif($form->param_value('category'))
+            {
+                $category = $form->param_value('category');
+            }
+            $el_data->{'category'} = $category;
+        }
+    }
+    my $children;
+    if($id)
+    {
+        $el_row = schema->resultset($self->ORMObj())->find($id);
+        $el_row->update($el_data);
+        $children = $el_row->can($self->multilang_children());
+        $el_row->$children->delete_all() if($children);
+    }
+    else
+    {
+        $el_row = schema->resultset($self->ORMObj())->create($el_data);
+        $children = $el_row->can($self->multilang_children());
+    }
+    if($children)
+    {
+        my @languages = @{config->{Strehler}->{languages}};
+        foreach my $lang (@languages)
+        {
+            my $to_write = 0;
+            my $multi_el_data;
+            foreach my $multicolumn (schema->resultset($self->ORMObj())->$children->result_source->columns)
+            {
+                if($form->param_value($multicolumn . '_' . $lang))
+                {
+                    $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
+                    $to_write = 1;
+                }    
+                else
+                {
+                    my $accessor = $self->can('save_' . $multicolumn);
+                    if($accessor)
+                    {
+                        $multi_el_data->{$multicolumn} = $self->$accessor($el_row->id, $form, $lang);
+                    }
+                    $to_write = 1 if $multi_el_data->{$multicolumn};
+                }
+            }
+            if($to_write)
+            {
+                $multi_el_data->{'language'} = $lang;
+                $el_row->$children->create( $multi_el_data );   
+            }
+        }
+    }
+    if($form->param_value('tags'))
+    {
+        Strehler::Meta::Tag->save_tags($form->param_value('tags'), $el_row->id, $self->item_type());
+    }
+    return $el_row->id;  
 }
 
 1;

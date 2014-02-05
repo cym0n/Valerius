@@ -1,6 +1,5 @@
 package Strehler::Admin;
 
-use Digest::MD5 "md5_hex";
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
@@ -8,11 +7,12 @@ use Dancer2::Plugin::Strehler;
 use HTML::FormFu;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
-use Strehler::Helpers;
+use Strehler::Helpers; 
 use Strehler::Meta::Tag;
 use Strehler::Element::Image;
 use Strehler::Element::Article;
 use Strehler::Element::User;
+use Strehler::Element::Log;
 use Strehler::Meta::Category;
 
 
@@ -57,7 +57,7 @@ any '/login' => sub {
             $message = "Authentication failed!";
         }
     }
-    template "admin/login", { form => $form->render(), message => $message, layout => 'admin' }
+    template "admin/login", { form => $form->render(), message => $message }, { layout => 'light-admin' }
 };
 
 get '/logout' => sub
@@ -79,7 +79,8 @@ any '/image/add' => sub
     if($form->submitted_and_valid)
     {
         my $img = request->upload('photo');
-        my $id = Strehler::Element::Image::save_form(undef, $img, $form);
+        my $id = Strehler::Element::Image->save_form(undef, $img, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'image', $id);
         redirect dancer_app->prefix . '/image/edit/' . $id;
     }
     $form = bootstrap_divider($form);
@@ -107,7 +108,8 @@ post '/image/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         my $img = request->upload('photo');
-        Strehler::Element::Image::save_form($id, $img, $form);
+        Strehler::Element::Image->save_form($id, $img, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'image', $id);
         redirect dancer_app->prefix . '/image/list';
     }
     my $img = Strehler::Element::Image->new($id);
@@ -132,7 +134,8 @@ any '/article/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Article::save_form(undef, $form);
+        my $id = Strehler::Element::Article->save_form(undef, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'article', $id);
         redirect dancer_app->prefix . '/article/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
@@ -158,7 +161,8 @@ post '/article/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Article::save_form($id, $form);
+        Strehler::Element::Article->save_form($id, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'article', $id);
         redirect dancer_app->prefix . '/article/list';
     }
     template "admin/article", { form => $form->render() }
@@ -176,13 +180,22 @@ any '/user/add' => sub
     my $form = form_user('add');
     my $params_hashref = params;
     $form->process($params_hashref);
+    my $message = "";
     if($form->submitted_and_valid)
     {
         my $id = Strehler::Element::User->save_form(undef, $form);
-        redirect dancer_app->prefix . '/user/list';
+        if($id == -1)
+        {
+            $message = "Username already in use";
+        }
+        else
+        {
+            Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
+            redirect dancer_app->prefix . '/user/list';
+        }
     }
     $form = bootstrap_divider($form);
-    template "admin/user", { form => $form->render() }
+    template "admin/user", { form => $form->render(), message => $message }
 };
 
 get '/user/edit/:id' => sub {
@@ -210,12 +223,21 @@ post '/user/edit/:id' => sub
     my $id = params->{id};
     my $params_hashref = params;
     $form->process($params_hashref);
+    my $message;
     if($form->submitted_and_valid)
     {
-        Strehler::Element::User->save_form($id, $form);
-        redirect dancer_app->prefix . '/user/list';
+        my $return_id = Strehler::Element::User->save_form($id, $form);
+        if($return_id == -1)
+        {
+            $message = "Username already in use";
+        }
+        else
+        {
+            Strehler::Element::Log->write(session->read('user'), 'edit', 'user', $id);
+            redirect dancer_app->prefix . '/user/list';
+        }
     }
-    template "admin/user", { form => $form->render() }
+    template "admin/user", { form => $form->render(), message => $message }
 };
 
 #Categories
@@ -238,19 +260,20 @@ any '/category/list' => sub
         return;
     }
     #THE TABLE
-    my $to_view = Strehler::Meta::Category::get_list();
+    my $to_view = Strehler::Meta::Category->get_list();
 
     #THE FORM
     my $form = HTML::FormFu->new;
-    my @entities = get_categorized_entities();
+    my @entities = Strehler::Helpers::get_categorized_entities();
     $form->load_config_file( 'forms/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
-    $parent->options(Strehler::Meta::Category::make_select());
+    $parent->options(Strehler::Meta::Category->make_select());
     my $params_hashref = params;
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $new_category = Strehler::Meta::Category::save_form(undef, $form, \@entities);
+        my $id = Strehler::Meta::Category->save_form(undef, $form, \@entities);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category_list", { categories => $to_view, form => $form };
@@ -265,11 +288,12 @@ any '/category/add' => sub
     }
     my $form = form_category();
     my $params_hashref = params;
-    my @entities = get_categorized_entities();
+    my @entities = Strehler::Helpers::get_categorized_entities();
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Meta::Category::save_form(undef, $form, \@entities);
+        my $id = Strehler::Meta::Category->save_form(undef, $form, \@entities);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
         redirect dancer_app->prefix . '/category/list'; 
     }
     $form = bootstrap_divider($form);
@@ -283,7 +307,7 @@ get '/category/edit/:id' => sub {
     }
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
-    my @entities = get_categorized_entities();
+    my @entities = Strehler::Helpers::get_categorized_entities();
     my $form_data = $category->get_form_data(\@entities);
     my $form = form_category();
     $form->default_values($form_data);
@@ -300,11 +324,12 @@ post '/category/edit/:id' => sub
     my $form = form_category();
     my $id = params->{id};
     my $params_hashref = params;
-    my @entities = get_categorized_entities();
+    my @entities = Strehler::Helpers::get_categorized_entities();
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Meta::Category::save_form($id, $form, \@entities);
+        Strehler::Meta::Category->save_form($id, $form, \@entities);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'category', $id);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category", { form => $form->render() }
@@ -321,7 +346,13 @@ get '/category/delete/:id' => sub
     my $category = Strehler::Meta::Category->new($id);
     if($category->has_elements())
     {
-        my $message = "La categoria " . $category->get_attr('category') . " non &egrave; vuota! Non &egrave; possibile cancellarla";    
+        my $message = "Category " . $category->get_attr('category') . " is not empty! Deletion is impossible.";    
+        my $return = dancer_app->prefix . "/category/list";
+        template "admin/message", { message => $message, backlink => $return };
+    }
+    elsif($category->is_parent())
+    {
+        my $message = "Category " . $category->get_attr('category') . " has subcategories! Deletion is impossible.";    
         my $return = dancer_app->prefix . "/category/list";
         template "admin/message", { message => $message, backlink => $return };
     }
@@ -341,19 +372,14 @@ post '/category/delete/:id' => sub
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     $category->delete();
+    Strehler::Element::Log->write(session->read('user'), 'delete', 'category', $id);
     redirect dancer_app->prefix . '/category/list';
 };
 
-ajax '/category/last/:id' => sub
-{
-    my $id = params->{id};
-    my $category = Strehler::Meta::Category->new($id);
-    return $category->max_article_order() + 1;
-};
 ajax '/category/select/:id' => sub
 {
     my $id = params->{id};
-    my $data = Strehler::Meta::Category::make_select($id);
+    my $data = Strehler::Meta::Category->make_select($id);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };
@@ -365,7 +391,7 @@ ajax '/category/select/:id' => sub
 };
 ajax '/category/select' => sub
 {
-    my $data = Strehler::Meta::Category::make_select(undef);
+    my $data = Strehler::Meta::Category->make_select(undef);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };
@@ -397,7 +423,7 @@ ajax '/category/tagform/:type/:id?' => sub
 
 get '/:entity' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $entity = params->{entity};
     if($entity)
     {
         if (! check_role($entity))
@@ -415,8 +441,9 @@ get '/:entity' => sub
 
 any '/:entity/list' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    my %entity_data = Strehler::Helpers::get_entity_data($entity);
+    if(! $entity_data{'auto'})
     {
         return pass;
     }
@@ -425,34 +452,37 @@ any '/:entity/list' => sub
         send_error("Access denied", 403);
         return;
     }
-    $custom_list_view ||= 'admin/generic_list';
+
+    my $custom_list_view = $entity_data{'custom_list_view'} || 'admin/generic_list';
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
     if(exists params->{'catname'})
     {
-        my $wanted_cat = Strehler::Meta::Category::explode_name(params->{'catname'});
+        my $wanted_cat = Strehler::Meta::Category->explode_name(params->{'catname'});
         $cat_param = $wanted_cat->get_attr('id');
     }
     $page ||= 1;
     my $cat = undef;
     my $subcat = undef;
-    ($cat, $subcat) = Strehler::Meta::Category::explode_tree($cat_param);
+    ($cat, $subcat) = Strehler::Meta::Category->explode_tree($cat_param);
     my $entries_per_page = 20;
+    my $class = $entity_data{'class'};
     eval "require $class";
     my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template $custom_list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
+    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}), %entity_data };
 };
 get '/:entity/turnon/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    my %entity_data = Strehler::Helpers::get_entity_data($entity);
+    if(! $entity_data{'auto'})
     {
         return pass;
     }
-    if(! $publishable)
+    if(! $entity_data{'publishable'})
     {
         return pass;
     }
@@ -461,20 +491,23 @@ get '/:entity/turnon/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    my $class = $entity_data{'class'};
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
     $obj->publish();
+    Strehler::Element::Log->write(session->read('user'), 'publish', $entity, $id);
     redirect dancer_app->prefix . '/'. $entity . '/list';
 };
 get '/:entity/turnoff/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    my %entity_data = Strehler::Helpers::get_entity_data($entity);
+    if(! $entity_data{'auto'})
     {
         return pass;
     }
-    if(! $publishable)
+    if(! $entity_data{'publishable'})
     {
         return pass;
     }
@@ -483,16 +516,18 @@ get '/:entity/turnoff/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    my $class = $entity_data{'class'};
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
     $obj->unpublish();
+    Strehler::Element::Log->write(session->read('user'), 'unpublish', $entity, $id);
     redirect dancer_app->prefix . '/'. $entity . '/list';
 };
 get '/:entity/delete/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
     {
         return pass;
     }
@@ -501,16 +536,23 @@ get '/:entity/delete/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    if (! Strehler::Helpers::get_entity_attr($entity, 'deletable'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
+    my $label = Strehler::Helpers::get_entity_attr($entity, 'label');
     eval "require $class";
     my $obj = $class->new($id);
     my %el = $obj->get_basic_data();
-    template "admin/delete", { what => $entity, el => \%el, backlink => dancer_app->prefix . '/' . $entity };
+    template "admin/delete", { what => $label, el => \%el, backlink => dancer_app->prefix . '/' . $entity };
 };
 post '/:entity/delete/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
     {
         return pass;
     }
@@ -519,23 +561,31 @@ post '/:entity/delete/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    if (! Strehler::Helpers::get_entity_attr($entity, 'deletable'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
     eval "require $class";
     my $obj = $class->new($id);
     $obj->delete();
+    Strehler::Element::Log->write(session->read('user'), 'delete', $entity, $id);
     redirect dancer_app->prefix . '/' . $entity . '/list';
 };
 ajax '/:entity/tagform/:id?' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
     {
         return pass;
     }
-    if(! $categorized)
+    if(! Strehler::Helpers::get_entity_attr($entity, 'categorized'))
     {
         return pass;
     }
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
     if(params->{id})
     {
         eval "require $class";
@@ -558,7 +608,7 @@ ajax '/:entity/tagform/:id?' => sub
         }
         else
         {
-            template 'admin/open_tags';
+            template 'admin/open_tags', { tags => $obj->get_tags() };
         }
     }
     else
@@ -566,7 +616,113 @@ ajax '/:entity/tagform/:id?' => sub
            template 'admin/open_tags';
     }
 };
+ajax '/:entity/lastchapter/:id' => sub
+{
+    my $entity = params->{entity};
+    my $id = params->{id};
+    my %entity_data = Strehler::Helpers::get_entity_data($entity);
+    if(! $entity_data{'auto'})
+    {
+        return pass;
+    }
+    if(! $entity_data{'ordered'})
+    {
+        return pass;
+    }
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
+    eval "require $class";
+    return $class->max_category_order($id) +1;
+};
 
+any '/:entity/add' => sub
+{
+    my $entity = params->{entity};
+    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
+    {
+        return pass;
+    }
+    if(! Strehler::Helpers::get_entity_attr($entity, 'creatable'))
+    {
+        return pass;
+    }
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class'),
+    my $label = Strehler::Helpers::get_entity_attr($entity, 'label'),
+    my $form = form_generic(Strehler::Helpers::get_entity_attr($entity, 'form'), Strehler::Helpers::get_entity_attr($entity, 'multilang_form'), 'add'); 
+    my $params_hashref = params;
+    $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    if(! $form)
+    {
+        return pass;
+    }
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        eval "require $class";
+        my $id = $class->save_form(undef, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
+        redirect dancer_app->prefix . '/' . $entity . '/list';
+    }
+    my $fake_tags = $form->get_element({ name => 'tags'});
+    Strehler::Admin::bootstrap_divider($form);
+    $form->remove_element($fake_tags) if($fake_tags);
+    template "admin/generic_add", { entity => $entity, label => $label, form => $form->render() }
+};
+get '/:entity/edit/:id' => sub {
+    my $id = params->{id};
+    my $entity = params->{entity};
+    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
+    {
+        return pass;
+    }
+    if(! Strehler::Helpers::get_entity_attr($entity, 'updatable'))
+    {
+        return pass;
+    }
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
+    my $label = Strehler::Helpers::get_entity_attr($entity, 'label');
+    eval "require $class";
+    my $el = $class->new($id);
+    my $form_data = $el->get_form_data();
+    my $form = form_generic(Strehler::Helpers::get_entity_attr($entity, 'form'), Strehler::Helpers::get_entity_attr($entity, 'multilang_form'), 'edit', $form_data->{'category'});
+    if(! $form)
+    {
+        return pass;
+    }
+    $form->default_values($form_data);
+    $form = Strehler::Admin::bootstrap_divider($form);
+    template "admin/generic_add", {  entity => $entity, label => $label, id => $id, form => $form->render() }
+};
+post '/:entity/edit/:id' => sub
+{
+    my $id = params->{id};
+    my $entity = params->{entity};
+    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
+    {
+        return pass;
+    }
+    if(! Strehler::Helpers::get_entity_attr($entity, 'updatable'))
+    {
+        return pass;
+    }
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
+    my $label = Strehler::Helpers::get_entity_attr($entity, 'label');
+    my $form = form_generic(Strehler::Helpers::get_entity_attr($entity, 'form'), Strehler::Helpers::get_entity_attr($entity, 'multilang_form'), 'edit');
+    if(! $form)
+    {
+        return pass;
+    }
+    my $params_hashref = params;
+    $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        eval "require $class";
+        $class->save_form($id, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
+        redirect dancer_app->prefix . '/' . $entity . '/list';
+    }
+    template "admin/generic_add", { entity => $entity, label => $label, id => $id, form => $form->render() }
+};
 
 ##### Helpers #####
 # They only manipulate forms rendering and manage login
@@ -598,9 +754,9 @@ sub form_image
     $form = add_multilang_fields($form, \@languages, 'forms/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
     my $category = $form->get_element({ name => 'category'});
-    $category->options(Strehler::Meta::Category::make_select());
+    $category->options(Strehler::Meta::Category->make_select());
     my $subcategory = $form->get_element({ name => 'subcategory'});
-    $subcategory->options(Strehler::Meta::Category::make_select($has_sub));
+    $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
     return $form;
 }
 
@@ -612,13 +768,12 @@ sub form_article
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
     my $default_language = config->{Strehler}->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    #$form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
-    $image->options(Strehler::Element::Image::make_select());
+    $image->options(Strehler::Element::Image->make_select());
     my $category = $form->get_element({ name => 'category'});
-    $category->options(Strehler::Meta::Category::make_select());
+    $category->options(Strehler::Meta::Category->make_select());
     my $subcategory = $form->get_element({ name => 'subcategory'});
-    $subcategory->options(Strehler::Meta::Category::make_select($has_sub));
+    $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
     return $form;
 }
 
@@ -627,7 +782,7 @@ sub form_category
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
-    $category->options(Strehler::Meta::Category::make_select());
+    $category->options(Strehler::Meta::Category->make_select());
     $form = add_dynamic_fields_for_category($form); 
     return $form;
 }
@@ -641,6 +796,36 @@ sub form_user
     {
         $form->constraint({ name => 'password', type => 'Required' }); 
         $form->constraint({ name => 'password-confirm', type => 'Required' }); 
+    }
+    return $form;
+}
+
+sub form_generic
+{
+    my $conf = shift;
+    my $multilang_conf = shift;
+    my $action = shift;
+    my $has_sub = shift;
+    if(! $conf)
+    {
+        return undef;
+    }
+
+    my $form = HTML::FormFu->new;
+    $form->load_config_file( $conf );
+    if($multilang_conf)
+    {
+        $form = add_multilang_fields($form, \@languages, $multilang_conf); 
+    }
+    my $category = $form->get_element({ name => 'category'});
+    if($category)
+    {
+       $category->options(Strehler::Meta::Category->make_select());
+       my $subcategory = $form->get_element({ name => 'subcategory'});
+       if($subcategory)
+       {
+           $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
+       }
     }
     return $form;
 }
@@ -712,7 +897,7 @@ sub add_dynamic_fields_for_category
     my $form = shift;
     my $config = 'forms/admin/category_dynamic.yml';
     my $position = $form->get_element({ name => 'save' });
-    for(get_categorized_entities())
+    for(Strehler::Helpers::get_categorized_entities())
     {
         my $ent = $_;
         my $form_dyna = HTML::FormFu->new;
@@ -739,75 +924,18 @@ sub add_dynamic_fields_for_category
     }
     return $form;
 }
-sub get_categorized_entities
-{
-    my @entities = ('article', 'image'); #standard entities for Strehler
-    my $extra = config->{'Strehler'}->{'extra_menu'};
-    for(keys %{$extra})
-    {
-        if(config->{'Strehler'}->{'extra_menu'}->{$_}->{'categorized'})
-        {
-            push @entities, $_;
-        }
-    }
-    return @entities;
-}
 
-sub get_entity_data
-{
-    my $entity = shift;
-    my $class = undef;
-    my $categorized = undef;
-    my $publishable = undef;
-    my $custom_list_view = undef;
-    if($entity eq 'article')
-    {
-        $class = 'Strehler::Element::Article';
-        $categorized = 1;
-        $publishable = 1;
-        $custom_list_view = 'admin/article_list';
-    }
-    elsif($entity eq 'image')
-    {
-        $class = 'Strehler::Element::Image';
-        $categorized = 1;
-        $publishable = 1;
-        $custom_list_view = 'admin/image_list';
-    }
-    elsif($entity eq 'user')
-    {
-        $class = 'Strehler::Element::User';
-        $categorized = 0;
-        $publishable = 0;
-#        $custom_list_view = 'admin/image_list';
-    }
-  
-    elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
-    {
-        if(config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto})
-        {
-            $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class};
-            $categorized = config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized};
-            $publishable = config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable};
-            $custom_list_view = config->{'Strehler'}->{'extra_menu'}->{$entity}->{custom_list_view}; 
-        }
-        else
-        {
-            $entity = undef;
-        }
-    }
-    else
-    {
-        $entity = undef;
-    }
-    return ($entity, $class, $categorized, $publishable, $custom_list_view);
-}
 sub check_role
 {
-    my $entity = shift;
-    if($entity eq 'user' || $entity eq 'category')
+    if(! config->{Strehler}->{admin_secured})
     {
-        if(session->read('role') && session->read('role') eq 'admin')
+        return 1;
+    }
+    my $entity = shift;
+    my %entity_data = Strehler::Helpers::get_entity_data($entity);
+    if($entity_data{'role'})
+    {
+        if(session->read('role') eq $entity_data{'role'})
         {
             return 1;
         }

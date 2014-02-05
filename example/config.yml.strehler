@@ -4,8 +4,14 @@ Strehler:
     default_language: 'it'
     extra_menu:
         path1:
+            auto: 1
             label: firstpath
             class: Site::Element::Dummy
+            form: forms/myadmin/wine.yml
+            multilang_form: forms/myadmin/wine_multilang.yml
+            categorized: 1
+            publishable: 0
         path2:
+            auto: 0
             label: thesecond
             class: Site::Element::Second

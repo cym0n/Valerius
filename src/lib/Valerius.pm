@@ -26,8 +26,8 @@ hook before_template_render => sub {
     };
 
 get '/' => sub {
-    my $news = Strehler::Element::Article->get_last_by_date('notizie');
-    my $chapter = Strehler::Element::Article->get_last_by_order('romanzo');
+    my $news = Strehler::Element::Article->get_last_by_date('notizie', 'it');
+    my $chapter = Strehler::Element::Article->get_last_by_order('romanzo', 'it');
     my %news_data = ();
     if($news)
     {
@@ -57,12 +57,12 @@ get '/romanzo' => sub {
 };
 
 get '/romanzo/ultimo-capitolo' => sub {
-    my $last = Strehler::Element::Article->get_last_by_order('romanzo');
+    my $last = Strehler::Element::Article->get_last_by_order('romanzo', 'it');
     my $slug = $last->get_attr_multilang('slug', 'it');
     forward '/romanzo/' . $slug;
 };
 get '/romanzo/primo-capitolo' => sub {
-    my $last = Strehler::Element::Article->get_first_by_order('romanzo');
+    my $last = Strehler::Element::Article->get_first_by_order('romanzo', 'it');
     my $slug = $last->get_attr_multilang('slug', 'it');
     forward '/romanzo/' . $slug;
 };
@@ -70,7 +70,7 @@ get '/romanzo/primo-capitolo' => sub {
 get '/romanzo/:slug' => sub {
     my $slug = params->{slug};
     my $chapter = Strehler::Element::Article->get_by_slug($slug, 'it');
-    if( ! $chapter->exists() || $chapter->category() ne 'romanzo')
+    if( ! $chapter->exists() || $chapter->get_category_name() ne 'romanzo')
     {
         send_error("Capitolo inesistente", 404);
     }

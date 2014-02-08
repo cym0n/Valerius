@@ -50,6 +50,7 @@ __PACKAGE__->table("IMAGES");
 =head2 category
 
   data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =cut
@@ -60,7 +61,7 @@ __PACKAGE__->add_columns(
   "image",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "category",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -75,16 +76,15 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-03 15:21:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P8K/4MfKm9RMKYUQ4Vk6gg
+=head2 category
 
-__PACKAGE__->has_many(
-  "descriptions",
-  "Valerius::ValeriusDB::Result::Description",
-  { "foreign.image" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+Type: belongs_to
+
+Related object: L<Valerius::ValeriusDB::Result::Category>
+
+=cut
 
 __PACKAGE__->belongs_to(
   "category",
@@ -93,10 +93,30 @@ __PACKAGE__->belongs_to(
   {
     is_deferrable => 1,
     join_type     => "LEFT",
-    on_delete     => undef,
-    on_update     => undef,
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
   },
 );
 
+=head2 descriptions
 
+Type: has_many
+
+Related object: L<Valerius::ValeriusDB::Result::Description>
+
+=cut
+
+__PACKAGE__->has_many(
+  "descriptions",
+  "Valerius::ValeriusDB::Result::Description",
+  { "foreign.image" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-05 23:07:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eQ2NYNXpstLUYrFwxxjTzQ
+
+
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

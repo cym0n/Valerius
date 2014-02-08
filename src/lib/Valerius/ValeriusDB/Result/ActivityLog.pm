@@ -1,12 +1,12 @@
 use utf8;
-package Valerius::ValeriusDB::Result::Tag;
+package Valerius::ValeriusDB::Result::ActivityLog;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-Valerius::ValeriusDB::Result::Tag
+Valerius::ValeriusDB::Result::ActivityLog
 
 =cut
 
@@ -27,11 +27,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<TAGS>
+=head1 TABLE: C<ACTIVITY_LOG>
 
 =cut
 
-__PACKAGE__->table("TAGS");
+__PACKAGE__->table("ACTIVITY_LOG");
 
 =head1 ACCESSORS
 
@@ -41,34 +41,56 @@ __PACKAGE__->table("TAGS");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 tag
+=head2 user
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 120
+  size: 100
 
-=head2 item_id
+=head2 action
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 100
+
+=head2 entity_type
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 100
+
+=head2 entity_id
 
   data_type: 'integer'
   is_nullable: 1
 
-=head2 item_type
+=head2 timestamp
 
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 20
+  data_type: 'timestamp'
+  datetime_undef_if_invalid: 1
+  default_value: current_timestamp
+  is_nullable: 0
 
 =cut
 
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "tag",
-  { data_type => "varchar", is_nullable => 1, size => 120 },
-  "item_id",
+  "user",
+  { data_type => "varchar", is_nullable => 1, size => 100 },
+  "action",
+  { data_type => "varchar", is_nullable => 1, size => 100 },
+  "entity_type",
+  { data_type => "varchar", is_nullable => 1, size => 100 },
+  "entity_id",
   { data_type => "integer", is_nullable => 1 },
-  "item_type",
-  { data_type => "varchar", is_nullable => 1, size => 20 },
+  "timestamp",
+  {
+    data_type => "timestamp",
+    datetime_undef_if_invalid => 1,
+    default_value => \"current_timestamp",
+    is_nullable => 0,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -85,7 +107,7 @@ __PACKAGE__->set_primary_key("id");
 
 
 # Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-05 23:07:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DwXqjjqyVgzZdY+O5kpKbA
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hL7eDrWzxN9Bfhpde4UPfA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

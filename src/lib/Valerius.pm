@@ -97,7 +97,7 @@ get '/romanzo/:slug' => sub {
 
 
 get '/personaggi' => sub {
-    my $main = Strehler::Meta::Category->new(name => 'personaggi');
+    my $main = Strehler::Meta::Category->new(category => 'personaggi', parent => undef);
     my @subs = $main->subcategories();
     my @data;
     for(@subs)
@@ -106,7 +106,7 @@ get '/personaggi' => sub {
         my %el = $cat->get_basic_data();
         $el{'title'} = ucfirst($el{'title'});
         my $images = Strehler::Element::Image->get_list({ category_id => $el{'id'}});
-        $el{'image'} = $images->{'to_view'}->[0]->{'source'};
+        $el{'image'} = $images->{'to_view'}->[0]->{'image'};
         push @data, \%el;
     }
     template 'characters', { page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire",

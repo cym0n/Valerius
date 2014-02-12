@@ -16,7 +16,7 @@
     [% if article.title || article.text %]
     <div id="news" class="well">
         <h3>Notizie dalla Guerra del Vapore</h3>
-        <h4>[% article.publish_date %] - [% article.title %]</h4>
+        <h4>[% article.publish_date.strftime('%d-%m-%Y') %] - [% article.title %]</h4>
         <p>
            [% article.text %]
         </p>

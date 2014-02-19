@@ -64,6 +64,7 @@ __PACKAGE__->table("ARTICLES");
   datetime_undef_if_invalid: 1
   default_value: current_timestamp
   is_nullable: 0
+  timezone: 'Europe/Rome'
 
 =head2 published
 
@@ -87,6 +88,7 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     default_value => \"current_timestamp",
     is_nullable => 0,
+    timezone => "Europe/Rome",
   },
   "published",
   { data_type => "tinyint", is_nullable => 1 },
@@ -142,8 +144,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-05 23:07:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G29jpBYyfX4nBlGdpzabRw
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-20 00:39:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mzzGuUznmhw/WN+BlkXCFA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

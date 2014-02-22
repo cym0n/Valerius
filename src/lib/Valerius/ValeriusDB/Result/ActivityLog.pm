@@ -70,7 +70,6 @@ __PACKAGE__->table("ACTIVITY_LOG");
   datetime_undef_if_invalid: 1
   default_value: current_timestamp
   is_nullable: 0
-  timezone: 'Europe/Rome'
 
 =cut
 
@@ -91,7 +90,6 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     default_value => \"current_timestamp",
     is_nullable => 0,
-    timezone => "Europe/Rome",
   },
 );
 
@@ -108,8 +106,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-20 00:39:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/53kGeei+Ui3P7rPY/doAQ
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-22 12:26:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0bvfh3GyVIu9+SSRmJi3TQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

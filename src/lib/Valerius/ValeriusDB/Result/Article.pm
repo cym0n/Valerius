@@ -60,11 +60,9 @@ __PACKAGE__->table("ARTICLES");
 
 =head2 publish_date
 
-  data_type: 'timestamp'
+  data_type: 'date'
   datetime_undef_if_invalid: 1
-  default_value: current_timestamp
-  is_nullable: 0
-  timezone: 'Europe/Rome'
+  is_nullable: 1
 
 =head2 published
 
@@ -83,13 +81,7 @@ __PACKAGE__->add_columns(
   "display_order",
   { data_type => "integer", is_nullable => 1 },
   "publish_date",
-  {
-    data_type => "timestamp",
-    datetime_undef_if_invalid => 1,
-    default_value => \"current_timestamp",
-    is_nullable => 0,
-    timezone => "Europe/Rome",
-  },
+  { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
   "published",
   { data_type => "tinyint", is_nullable => 1 },
 );
@@ -144,8 +136,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-22 17:13:35
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3K8S+UcZ63mt279nRG/bvw
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-22 23:46:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CS1c7/KIeP+pRXHnqNHegg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

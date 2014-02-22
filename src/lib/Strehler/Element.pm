@@ -85,20 +85,77 @@ sub delete
 sub get_attr
 {
     my $self = shift;
-    my $attr = shift;
-    return $self->row->get_column($attr);
+    my $attribute = shift;
+    if($attribute eq 'category')
+    {
+        return $self->row->category->category;
+    }
+    if($attribute eq 'main-title')
+    {
+        return $self->main_title();
+    }
+    if($attribute eq 'category-name')
+    {
+        return $self->get_category_name();
+    }
+    my $accessor = $self->can($attribute);
+    if($accessor)
+    {
+        return $self->$accessor($self->row->$attribute);
+    }
+    else
+    {
+        if($self->row->result_source->has_column($attribute))
+        {
+            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+            {
+                my $ts = $self->row->$attribute;
+                $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
+                return $ts;
+            }
+            else
+            {
+                return $self->row->get_column($attribute);
+            }
+        }
+        else
+        {
+            return undef;
+        }
+    }
 }
 sub get_attr_multilang
 {
     my $self = shift;
-    my $attr = shift;
+    my $attribute = shift;
     my $lang = shift;
     my $children = $self->row->can($self->multilang_children());
     return undef if not $children;
+    my $accessor = $self->can($attribute);
+    if($accessor)
+    {
+        return $self->$accessor($self->row->$attribute. $lang);
+    }
     my $content = $self->row->$children->find({'language' => $lang});
     if($content)
     {
-        return $content->get_column($attr);
+        if($content->result_source->has_column($attribute))
+        {
+            if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+            {
+                my $ts = $content->$attribute;
+                $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
+                return $ts;
+            }
+            else
+            {
+                return $content->get_column($attribute);
+            }
+        }
+        else
+        {
+            return undef;
+        }
     }
     else
     {
@@ -164,26 +221,10 @@ sub max_category_order
 sub get_basic_data
 {
     my $self = shift;
-    my %data = $self->row->get_columns;
-    if($self->row->can('category'))
+    my %data;
+    foreach my $c ($self->row->result_source->columns)
     {
-        $data{'category'} = $self->row->category->category;
-    }
-    if($self->row->result_source->has_column('published'))
-    {
-        $data{'published'} = $self->get_attr('published');
-    }
-    foreach my $attribute (keys %data)
-    {
-        if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
-        {
-            $data{$attribute} = $self->row->$attribute;
-        }
-        my $accessor = $self->can($attribute);
-        if($accessor)
-        {
-            $data{$attribute} = $self->$accessor($self->row->$attribute);
-        }
+        $data{$c} = $self->get_attr($c);
     }
     $data{'title'} = $self->main_title;
     $data{'category_name'} = $self->get_category_name();
@@ -198,30 +239,13 @@ sub get_ext_data
     my $children = $self->row->can($self->multilang_children());
     if($children)
     {
-        my $multilang_row = $self->row->$children->find({ language => $language });
-        my %multilang_data = $multilang_row->get_columns;
-        foreach my $attribute (keys %multilang_data)
+        foreach my $c ($self->row->$children->result_source->columns)
         {
-            if($attribute ne 'id' && $attribute ne $self->item_type() && $attribute ne 'language')
+            if($c ne 'id' && $c ne $self->item_type() && $c ne 'language')
             {
-                my $accessor = $self->can($attribute);
-                if($accessor)
-                {
-                    $data{$attribute} = $self->$accessor($multilang_data{$attribute}, $language);
-                }
-                else
-                {
-                    if($multilang_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
-                    {
-                        $data{$attribute} = $multilang_row->$attribute;
-                    }
-                    else
-                    {
-                        $data{$attribute} = $multilang_data{$attribute};
-                    }
-                }
+                $data{$c} = $self->get_attr_multilang($c, $language);
             }
-        } 
+        }
     }
     return %data;
 }
@@ -229,11 +253,11 @@ sub get_ext_data
 sub main_title
 {
     my $self = shift;
-    if($self->row->result_source->has_column('title'))
+    if($self->get_attr('title'))
     {
         return $self->get_attr('title');
     }
-    elsif($self->row->result_source->has_column('name'))
+    elsif($self->get_attr('name'))
     {
         return $self->get_attr('name');
     }   

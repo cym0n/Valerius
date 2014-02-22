@@ -39,6 +39,7 @@ plugins:
         mysql_enable_utf8: 1
 
 Strehler:
+    timezone: 'Europe/Rome'
     admin_secured: 1
     languages: ['it']
     default_language: 'it'

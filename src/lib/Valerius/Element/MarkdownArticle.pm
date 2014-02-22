@@ -11,12 +11,18 @@ sub text
     my $text = shift;
     return markdown($text);
 }
+sub bare_text
+{
+    my $self = shift;
+    my $text = shift;
+    return $text;
+}
 
 sub abstract
 {
     my $self = shift;
     my $language = shift;
-    my $text = $self->get_attr_multilang('text', $language);
+    my $text = $self->get_attr_multilang('text', $language, 1);
     return markdown(substr($text, 0, 800) . "...");
 }
 

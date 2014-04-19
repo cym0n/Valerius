@@ -87,7 +87,7 @@ get '/romanzo/:slug' => sub {
         {
             $prev_slug = $prev->get_attr_multilang('slug', 'it');
         }
-        template "chapter", { page_title => 'Capitolo ' . $chapter_data{'display_order'}, page_description => 'Valerius Demoire - Capitolo ' . $chapter_data{'display_order'} . ' - ' . $chapter_data{'title'}, canonical => "http:/www.valeriusdemoire.it/romanzo/" . $chapter_data{'slug'},
+        template "chapter", { page_title => 'Valerius Demoire - Capitolo ' . $chapter_data{'display_order'} . ' - ' . $chapter_data{'title'}, page_description => $chapter->incipit('it'), canonical => "http:/www.valeriusdemoire.it/romanzo/" . $chapter_data{'slug'},
                               chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
     }
 };

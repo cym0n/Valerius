@@ -26,4 +26,12 @@ sub abstract
     return markdown(substr($text, 0, 800) . "...");
 }
 
+sub incipit
+{
+    my $self = shift;
+    my $language = shift;
+    my $text = $self->get_attr_multilang('text', $language, 1);
+    return substr($text, 0, 100) . "...";
+}
+
 1;

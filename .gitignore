@@ -4,3 +4,4 @@ src/environments/ec2.yml
 src/environments/development.yml
 src/public/upload
 src/lib/regenerate_dbix.sh
+src/sessions

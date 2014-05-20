@@ -1,33 +1,38 @@
-<div class="content">
-    <div id="chaptercolumn">
-        <ul class="pager">
-          [% IF prev_slug %]
-          <li class="previous">
-            <a href="/romanzo/[% prev_slug %]">&larr; Precedente</a>
-          </li>
-          [% END %]
-          [% IF next_slug %]
-          <li class="next">
-            <a href="/romanzo/[% next_slug %]">Successivo &rarr;</a>
-          </li>
-          [% END %]
-        </ul>
-        <div id="chapter">
-            <h3>Capitolo [% chapter.display_order %]</h3>
-            <h2>[% chapter.title %]</h2>
-            [% chapter.text %]
-        </div>
-        <ul class="pager">
-          [% IF prev_slug %]
-          <li class="previous">
-            <a href="/romanzo/[% prev_slug %]">&larr; Precedente</a>
-          </li>
-          [% END %]
-          [% IF next_slug %]
-          <li class="next">
-            <a href="/romanzo/[% next_slug %]">Successivo &rarr;</a>
-          </li>
-          [% END %]
-        </ul>
-    </div>
-</div>
+	    <!-- Main Wrapper -->
+			<div class="wrapper wrapper-style2">
+				<div class="title">Capitolo [% chapter.display_order %]</div>
+				<div class="container">
+					<div class="row">
+						<div class="12u">
+							
+							<!-- Main -->
+								<div id="main">
+									
+									
+									<!-- Features -->
+										<section id="features">
+											<header class="style1">
+												<h2>[% chapter.title %]</h2>
+											</header>
+                                            <div class="style3">
+                                                [% chapter.text %]
+                                            </div>
+                                			<ul class="actions actions-centered">
+                                                [% IF prev_slug %]
+												<li><a href="/romanzo/[% prev_slug %]" class="button button-style2 button-big">Precedente</a></li>
+											    [% END %]
+                                                [% IF next_slug %]
+                                            	<li><a href="/romanzo/[% next_slug %]" class="button button-style2 button-big">Successivo</a></li>
+											    [% END %]
+											</ul>
+										</section>
+									<!-- /Features -->
+									
+								</div>
+							<!-- /Main -->
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- /Main Wrapper -->

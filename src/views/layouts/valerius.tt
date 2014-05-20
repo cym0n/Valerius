@@ -1,97 +1,107 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-type" content="text/html; charset=[% settings.charset %]" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Valerius Demoire, romanzo steampunk - [% page_title %]</title>
-<meta name="description" content="[% page_description %]" />
-<meta property="og:url" content="http://www.valeriusdemoire.it" />
-<meta property="og:type" content="website"/>
-<meta property="og:title" content="Valerius Demoire"/>
-<meta itemprop="name" content="Valerius Demoire"/>
+<!DOCTYPE HTML>
+<!--
+	Escape Velocity 2.5 by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Valerius Demoire, romanzo steampunk - [% page_title %]</title>
+		<meta http-equiv="content-type" content="text/html; charset=[% settings.charset %]" />
+		<meta name="description" content="[% page_description %]" />
+		<meta name="keywords" content="valerius, demoire, steampunk, guerra, romanzo, fantascienza, robot, giganti di ferro, myrmidon, Francia, Inghilterra, Germania, Spagna, Italia, vapore, magia, avventura, spada, puntate, capitoli" />
+		<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,700,900" rel="stylesheet" />
+		<!--[if lte IE 8]><script src="[% request.uri_base %]/js/html5shiv.js"></script><link rel="stylesheet" href="css/ie8.css" /><![endif]-->
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/jquery.dropotron.min.js"></script>
+		<script src="/js/config.js"></script>
+		<script src="/js/skel.min.js"></script>
+		<script src="/js/skel-panels.min.js"></script>
+		<noscript>
+			<link rel="stylesheet" href="/css/skel-noscript.css" />
+			<link rel="stylesheet" href="/css/style.css" />
+			<link rel="stylesheet" href="/css/style-desktop.css" />
+		</noscript>
+	</head>
+	<body class="homepage">
 
-<meta name="keywords" content="valerius, demoire, steampunk, guerra, romanzo, fantascienza, robot, giganti di ferro, myrmidon, Francia, Inghilterra, Germania, Spagna, Italia, vapore, magia, avventura, spada, puntate, capitoli" />
+		<!-- Header Wrapper -->
+			<div id="header-wrapper" class="wrapper">
+				<div class="container">
+					<div class="row">
+						<div class="12u">
+						
+							<!-- Header -->
+								<div id="header">
+									
+									<!-- Logo -->
+										<div id="logo">
+											<h1><a href="#">Valerius Demoire</a></h1>
+											<span class="byline">Cronache della seconda guerra del Vapore</span>
+										</div>
+									<!-- /Logo -->
+									
+									<!-- Nav -->
+										<nav id="nav">
+											<ul>
+												<li class="current_page_item"><a href="/">Home</a></li>
+												<li>
+													<span>Romanzo</span>
+													<ul>
+														<li><a href="/romanzo">Capitoli</a></li>
+														<li><a href="/romanzo/ultimo-capitolo">Ultimo capitolo</a></li>
+														<li><a href="/romanzo/primo-capitolo">Leggi dall'inizio</a></li>
+													</ul>
+												</li>
+												<li><a href="/personaggi">Personaggi</a></li>
+												<li><a href="/autore">Autore</a></li>
+											</ul>
+										</nav>
+									<!-- /Nav -->
 
-<link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap.min.css" />
-<link rel="stylesheet" href="[% request.uri_base %]/css/valerius.css" />
-<link rel="stylesheet" href="[% request.uri_base %]/bootstrap/css/bootstrap-responsive.css" />
-[% IF canonical %]<link rel="canonical" href="[% canonical %]"/>[%  END %]
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="[% request.uri_base %]/bootstrap/js/bootstrap.min.js"></script>
+								</div>
+							<!-- /Header -->
 
-<!-- Grab Google CDN's jQuery. fall back to local if necessary -->
-<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
-<script type="text/javascript">/* <![CDATA[ */
-    !window.jQuery && document.write('<script type="text/javascript" src="[% request.uri_base %]/javascripts/jquery.js"><\/script>')
-/* ]]> */</script-->
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- /Header Wrapper -->
+        [% content %]		
 
-</head>
-<body>
-<div id="fb-root"></div>
-<script>
-      (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/it_IT/all.js#xfbml=1";
-      fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
-</script>
-  
-<div id="header">
-    <div class="navbar">
-        <div class="navbar-inner">
-            <div class="span1">
-                <a href="/"><img src="/images/logo.png" class="brand" /></a>
-            </div>
-            <ul class="nav">
-                <li class="span2 hidden-phone"><a href="/romanzo">Romanzo</a></li>
-                <li class="span2 hidden-phone"><a href="/personaggi">Personaggi</a></li>
-                <!--li class="span2 hidden-phone"><a href="/timeline">Timeline</a></li-->
-                <li class="span2 hidden-phone"><a href="/autore">Autore</a></li>
-                <li class="span2 visible-phone"><a href="/romanzo/ultimo-capitolo">Ultimo capitolo</a></li>
-                <li class="span2 visible-phone"><a href="/romanzo/primo-capitolo">Primo capitolo</a></li>
-                <li class="span2 facebook">
-                    <span class="share" style="font: 18px Arial,sans-serif;color:#FFF"></span><fb:like href="https://www.facebook.com/valeriudemoire" send="false" layout="button_count" width="450" show_faces="false"></fb:like>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
-<div class="facebook">
-</div>
-[% content %]
-<div class="navbar visible-phone">
-    <div class="navbar-inner">
-        <ul class="nav">
-            <li class="span2"><a href="/romanzo">Romanzo</a></li>
-            <li class="span2"><a href="/personaggi">Personaggi</a></li>
-            <!--li class="span2"><a href="/timeline">Timeline</a></li-->
-            <li class="span2"><a href="/autore">Autore</a></li>
-        </ul>
-    </div>
-</div>
 
-<div id="footer">
-    <p>
-    Powered by <a href="http://perldancer.org/">Dancer2</a> [% dancer_version %]
-    </p>
-</div>
-[% IF google_monitor %]
-<script type="text/javascript">
+		<!-- Footer Wrapper -->
+			<div id="footer-wrapper" class="wrapper">
+				<div class="title">The Rest Of It</div>
+				<div class="container">
+					<div class="row">
+						<div class="12u">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-43433926-1']);
-  _gaq.push(['_trackPageview']);
+							<!-- Footer -->
+								<div id="footer">
+									<header class="style1">
+										<h2>Ipsum sapien elementum portitor?</h2>
+										<p class="byline">
+											Sed turpis tortor, tincidunt sed ornare in metus porttitor mollis nunc in aliquet.<br />
+											Nam pharetra laoreet imperdiet volutpat etiam consequat feugiat.
+										</p>
+									</header>
+                                </div>
+							<!-- /Footer -->
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+							<!-- Copyright -->
+								<div id="copyright">
+									<span>
+										&copy; Untitled. Design by <a href="http://html5up.net/">HTML5 UP</a>.
+									</span>
+								</div>
+							<!-- /Copyright -->
+						
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- /Footer Wrapper -->
 
-</script>
-[% END %]
-</body>
+	</body>
 </html>

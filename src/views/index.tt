@@ -1,32 +1,59 @@
-<div class="content">
-    <div id="shoulder" class="hidden-phone">
-        <div id="toLast" >
-            <div id="toLastText">
-                <a href="/romanzo/ultimo-capitolo">Leggi l'ultimo capitolo</a>
-            </div>
-        </div>
-        <div id="toLast" >
-            <div id="toLastText">
-                <a href="/romanzo/primo-capitolo">Leggi dall'inizio</a>
-            </div>
-        </div>
-   
-    </div>
-    <div id="maincolumn">
-    [% if article.title || article.text %]
-    <div id="news" class="well">
-        <h3>Notizie dalla Guerra del Vapore</h3>
-        <h4>[% article.publish_date.strftime('%d-%m-%Y') %] - [% article.title %]</h4>
-        <p>
-           [% article.text %]
-        </p>
-    </div>
-    [% end %]
-    <div id="sample">
-        <h3>Capitolo [% chapter.display_order %]</h3>
-        <h2>[% chapter.title %]</h2>
-        <p>[% chapter.text %]</p>
-        <div class="read-more pull-right"><a href="[% chapter.link %]">&gt; Leggi tutto</a></div>
-    </div>
-    </div>
-</div>
+		<!-- Intro Wrapper -->
+			<div id="intro-wrapper" class="wrapper wrapper-style1">
+				<div class="title">News</div>
+				<div class="container">
+					<div class="row">
+						<div class="12u">
+							
+							<!-- Intro -->
+								<section id="intro">
+                                [% if article.title || article.text %]
+                                <p class="style1">[% article.publish_date.strftime('%d-%m-%Y') %] - [% article.title %]</p>
+                            	<div class="style3">
+                                    [% article.text %]
+                                </div>
+                                [% end %]
+								</section>
+							<!-- /Intro -->
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- /Intro Wrapper -->
+
+	    <!-- Main Wrapper -->
+			<div class="wrapper wrapper-style2">
+				<div class="title">Capitolo [% chapter.display_order %]</div>
+				<div class="container">
+					<div class="row">
+						<div class="12u">
+							
+							<!-- Main -->
+								<div id="main">
+									
+									
+									<!-- Features -->
+										<section id="features">
+											<header class="style1">
+												<h2>[% chapter.title %]</h2>
+											</header>
+                                            <div class="style3">
+                                                [% chapter.text %]
+                                            </div>
+											<ul class="actions actions-centered">
+												<li><a href="[% chapter.link %]" class="button button-style1 button-big">Leggi tutto...</a></li>
+											</ul>
+										</section>
+									<!-- /Features -->
+									
+								</div>
+							<!-- /Main -->
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- /Main Wrapper -->
+		
+

@@ -1,0 +1,12 @@
+#features header.chapters {
+    padding-bottom: 2.5em;
+}
+header.chapters {
+    padding-top: 0em;
+}
+header.chapters a {
+    text-decoration: none;
+}
+a.active-chapter {
+    font-weight: bold;
+}

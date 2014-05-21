@@ -1,6 +1,47 @@
-<div class="content">
-    <div id="novelcolumn">
-        <div id="chapnumbers" class="pagination">
+<div class="wrapper wrapper-style2">
+	<div class="title">Capitoli</div>
+		<div class="container">
+    	    <div class="row">
+			    <div class="12u">
+					<div id="main">
+                        <section id="features">
+                            <header class="style1 chapters">
+                                <p class="byline">
+                                [% pageof = 1 %]
+                                [% WHILE  pageof <= last_page %]
+                                    <a [% IF pageof == page %]class="active-chapter"[% END %] href="[% request.path %]?page=[% pageof %]&order=[% order %]">[% pageof %]</a>
+                                    [% pageof = pageof + 1 %]
+                                [% END %]
+                                <br />
+                                [% IF page > 1 %]<a href="[% request.path %]?page=[% page - 1 %]&order=[% order %]">Prev</a> | [% END %] 
+                                <a href="[% request.path %]?page=1&order=[% IF order == 'asc' %]desc[% ELSE %]asc[% END %]">Inverti</a> 
+                                [% IF page < last_page %]<a href="[% request.path %]?page=[% page + 1 %]&order=[% order %]"> | Next</a>[% END %]
+                                </p>
+                            </header>
+                            <div class="feature-list">
+                                <div>
+                                    [% FOREACH c IN chapters %]
+                                    <div class="row">
+                                        <div class="12u">
+	                                        <section>
+		                                        <h3><a href="/romanzo/[% c.slug %]">Capitolo [% c.display_order %] - [% c.title %]</a></h3>
+			                                    <!-- p>Eget mattis at, laoreet vel et velit aliquam diam ante, aliquet sit amet vulputate. Eget mattis at, laoreet vel velit lorem.</p -->
+    	                                    </section>
+	                                    </div>
+                                    </div>
+                                    [% END %]
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!--div class="content">
+        <div id="novelcolumn">
+            <div id="chapnumbers" class="pagination">
             <ul>
                 [% pageof = 1 %]
                 [% WHILE  pageof <= last_page %]
@@ -22,4 +63,4 @@
             <div><a href="/romanzo/[% c.slug %]">Capitolo [% c.display_order %] - [% c.title %]</a></div>
         [% END %]
     </div>
-</div>
+</div-->

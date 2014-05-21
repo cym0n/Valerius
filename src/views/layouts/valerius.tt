@@ -17,6 +17,7 @@
 		<script src="/js/config.js"></script>
 		<script src="/js/skel.min.js"></script>
 		<script src="/js/skel-panels.min.js"></script>
+        <link rel="stylesheet" href="/css/escape-custom.css" />
 		<noscript>
 			<link rel="stylesheet" href="/css/skel-noscript.css" />
 			<link rel="stylesheet" href="/css/style.css" />

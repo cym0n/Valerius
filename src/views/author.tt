@@ -1,4 +1,49 @@
-<div class="content">
+<div class="wrapper wrapper-style3">
+    <div class="title">L'autore</div>
+        <div class="container">
+            <div class="row">
+                <div class="12u">
+                    <div id="highlights">
+                        <div>
+                            <div class="row">
+                                <div class="3u">
+                                    <img class="thumbnail" src="/images/mangatar.jpg" />
+                                </div>
+                                <div class="9u">
+                                    <p>
+                                    Simone Far&egrave; nasce il 18 Marzo 1979. Afflitto dall'assurdo morbo dell'informatica diviene, dopo alterne vicende, sviluppatore. Afflitto dalla maledizione di dover mettere il dolore del mondo in parole (e altre robe di questo tipo) diviene, contestualmente, scrittore amatoriale.<br />
+                                    Con tutte queste afflizioni difficile capire come misteriosamente sia arrivato a oggi, alla veneranda et&agrave; di 34 anni e, da una parte, abbia messo in piedi questo sito (ah! L'informatico!) mentre dall'altra lo abbia riempito dei contenuti di Valerius Demoire (ah! Lo scrittore!). Il risultato &egrave; che, qualunque cosa non vi piaccia di questo luogo &egrave; colpa sua</p>
+                                    <p>Simone Far&egrave; vaga per l'internet col nickname  <strong>Cymon</strong> da quando la gente in internet era composta solo da asociali pelosi con deliri di onnipotenza. Negli anni ha lasciato pochi e risibili segni, a cui per&ograve; &egrave; assai affezionato:
+                                    <ul>
+                                        <li>Il suo fumetto online: <a href="http://www.therabbit.it">Follow the Rabbit</a></li>
+                                        <li>Il suo account su <a href="https://www.facebook.com/cymon79">Facebook</a></li>
+                                        <li>Il suo blog in inglese dove si finge un vero sviluppatore: <a href="http://perlishscrewdriver.blogspot.com">The Perlish Sonic Screwdriver</a></li>
+                                        <li>E poi un libro, di quelli fatti con la carta: <a href="http://www.fantascienza.com/magazine/notizie/12700/milano-ultima-fermata/">Milano Ultima Fermata</a></li>
+                                    </ul>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--div class="content">
     <div id="authorcolumn">
         <img class="thumbnail" src="/images/mangatar.jpg" />
         <div>
@@ -15,4 +60,4 @@
         </p>
         </div>
     </div>
-</div>
+</div-->

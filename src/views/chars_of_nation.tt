@@ -1,8 +1,40 @@
-<div class="content">
+<div class="wrapper wrapper-style3">
+    <div class="title">
+        Inglesi
+    </div>
+        <div class="container">
+		    <div class="row">
+			    <div class="12u">
+				    <div id="highlights">
+					    <div>
+                            [% flip = 0 %]
+                            [% FOREACH c IN characters %] 
+                                [% IF flip == 0 %]<div class="row">[% END %]
+							    <div class="4u">
+								    <section class="highlight highlight-one">
+									    <img style="width:100%" src="[% c.image %]"></a>
+										<h3>[% c.title %]</h3>
+										<p>[% c.text %]</p>
+									</section>
+								</div>
+                                [% IF flip == 2 %]</div>[% flip = 0 %][% ELSE %][% flip = flip + 1 %][% END %]
+                            [% END %]
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<!-- div class="content">
     <div id="nationcolumn">
         <h1><img src="[% image %]" />[% nation %]</h1>
         [% FOREACH c IN characters %] 
             <p><strong>[% c.title %]</strong>: [% c.text %]</p>
         [% END %]
     </div>
-</div>
+</div-->

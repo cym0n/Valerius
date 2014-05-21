@@ -10,3 +10,6 @@ header.chapters a {
 a.active-chapter {
     font-weight: bold;
 }
+.feature-list h3 {
+    margin: 0;
+}

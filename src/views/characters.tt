@@ -1,4 +1,59 @@
-<div class="content">
+<div class="wrapper wrapper-style2">
+    <div class="title">Personaggi</div>
+	    <div class="container">
+        	<div class="row">
+		    	<div class="12u">
+    				<div id="main">
+	    				<section id="features">
+					        <div class="row">
+						        <div class="12u">
+								    <p class="style1">
+                                    In questa sezione del sito sono riportati tutti i personaggi del romanzo, divisi per nazionalit&agrave;.<br />
+                                    </p>
+								    <p class="style1">
+                                    Valerius Demoire &egrave; un romanzo dallo sviluppo caotico e non granch&egrave; organico quindi vi accorgerete presto che i personaggi da tenere in considerazione sono molti. Quindi pensiamo che, andando avanti con la lettura, questa sezione vi risulter&agrave; parecchio utile.<br />
+                                    </p>
+								    <p class="style1">
+                                    <em>ATTENZIONE!</em> I personaggi sono presentati in ordine di apparizione nella vicenda. Se siete a pari con la lettura non avrete niente da temere, altrimenti andando a leggere troppo avanti potreste bruciarvi qualche spoiler pi&ugrave; o meno grande.</p>
+                                    </p>
+						        </div>
+					        </div>
+							<div class="feature-list nations">
+								<div>
+                                    [% flip = 0 %]
+                                    [% FOREACH n IN nations %] 
+                                    [% IF flip == 0 %]
+                                    [% flip = 1 %]
+									<div class="row">
+										<div class="6u">
+											<section>
+                                                <h3 style="height: 48px; padding-left: 70px; background: url('[% n.image %]') no-repeat 0 0">
+												<a href="/personaggi/[% n.name %]">[% n.name %]</a></h3>
+											</section>
+										</div>
+                                    [% ELSE %] 
+                                    [% flip = 0 %]
+										<div class="6u">
+											<section>
+                                                <h3 style="height: 48px; padding-left: 70px; background: url('[% n.image %]') no-repeat 0 0">
+												<a href="/personaggi/[% n.name %]">[% n.name %]</a></h3>
+											</section>
+										</div>
+									</div>
+                                    [% END %]
+                                    [% END %]
+                                </div>
+				            </div>   	
+                        </section>
+					</div>
+				</div>
+			</div>
+        </div>
+	</div>
+</div>
+
+
+<!-- div class="content">
     <div id="characterscolumn">
         <div class="well">
             <p>In questa sezione del sito sono riportati tutti i personaggi del romanzo, divisi per nazionalit&agrave;.</p>
@@ -15,5 +70,5 @@
     </div>
 
 
-</div>
+</div-->
 

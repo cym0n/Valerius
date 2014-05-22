@@ -5,6 +5,7 @@ use Dancer2::Core::Error;
 use Date::Format;
 use Data::Dumper;
 use Valerius::Element::MarkdownArticle;
+use Valerius::Element::PortraitArticle;
 
 set layout => 'valerius';
 
@@ -119,7 +120,7 @@ get '/personaggi/:nation' => sub {
     }
     else
     {
-        my $characters = Strehler::Element::Article->get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
+        my $characters = Valerius::Element::PortraitArticle->get_list({ category_id => $nation->get_attr('id'), ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
         my $images = Strehler::Element::Image->get_list({ category_id => $nation->get_attr('id')});
         my $image = $images->{'to_view'}->[0]->{'source'};
         

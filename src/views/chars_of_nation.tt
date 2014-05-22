@@ -1,6 +1,6 @@
 <div class="wrapper wrapper-style3">
     <div class="title">
-        Inglesi
+        [% nation %]
     </div>
         <div class="container">
 		    <div class="row">
@@ -14,7 +14,7 @@
 								    <section class="highlight highlight-one">
 									    <img style="width:100%" src="[% c.image %]"></a>
 										<h3>[% c.title %]</h3>
-										<p>[% c.text %]</p>
+										<p>[% c.text %][% IF c.image_title %]<br /><em>(immagine: [% c.image_title %])</em>[% END %]</p>
 									</section>
 								</div>
                                 [% IF flip == 2 %]</div>[% flip = 0 %][% ELSE %][% flip = flip + 1 %][% END %]

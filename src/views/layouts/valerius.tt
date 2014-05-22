@@ -23,8 +23,23 @@
 			<link rel="stylesheet" href="/css/style.css" />
 			<link rel="stylesheet" href="/css/style-desktop.css" />
 		</noscript>
+        <meta property="og:url" content="http://www.valeriusdemoire.it" />
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="Valerius Demoire"/>
+        <meta itemprop="name" content="Valerius Demoire"/>
+        [% IF canonical %]<link rel="canonical" href="[% canonical %]"/>[%  END %]
 	</head>
-	<body class="homepage">
+    <body class="homepage">
+        <div id="fb-root"></div>
+        <script>
+        (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/it_IT/all.js#xfbml=1";
+        fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        </script>
 
 		<!-- Header Wrapper -->
 			<div id="header-wrapper" class="wrapper">
@@ -39,6 +54,7 @@
 										<div id="logo">
 											<h1><a href="#">Valerius Demoire</a></h1>
 											<span class="byline">Cronache della seconda guerra del Vapore</span>
+                                            <div class="share" style="height: 1em;font: 18px Arial,sans-serif;color:#FFF"></div><fb:like href="https://www.facebook.com/valeriudemoire" send="false" layout="button_count" width="450" show_faces="false"></fb:like>
 										</div>
 									<!-- /Logo -->
 									
@@ -56,6 +72,8 @@
 												</li>
 												<li><a href="/personaggi">Personaggi</a></li>
 												<li><a href="/autore">Autore</a></li>
+                                                <li>
+                                                </li>
 											</ul>
 										</nav>
 									<!-- /Nav -->

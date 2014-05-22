@@ -73,27 +73,14 @@
 
 		<!-- Footer Wrapper -->
 			<div id="footer-wrapper" class="wrapper">
-				<div class="title">The Rest Of It</div>
 				<div class="container">
 					<div class="row">
 						<div class="12u">
 
-							<!-- Footer -->
-								<div id="footer">
-									<header class="style1">
-										<h2>Ipsum sapien elementum portitor?</h2>
-										<p class="byline">
-											Sed turpis tortor, tincidunt sed ornare in metus porttitor mollis nunc in aliquet.<br />
-											Nam pharetra laoreet imperdiet volutpat etiam consequat feugiat.
-										</p>
-									</header>
-                                </div>
-							<!-- /Footer -->
-
 							<!-- Copyright -->
 								<div id="copyright">
 									<span>
-										&copy; Untitled. Design by <a href="http://html5up.net/">HTML5 UP</a>.
+                                        &copy; Simone Far&egrave; - Design by <a href="http://html5up.net/">HTML5 UP</a> - Site powered by <a href="http://search.cpan.org/dist/Strehler/">Strehler</a>/<a href="http://perldancer.org">Dancer2</a>.
 									</span>
 								</div>
 							<!-- /Copyright -->

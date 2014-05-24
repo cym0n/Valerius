@@ -1,10 +1,13 @@
 <div class="wrapper wrapper-style3">
     <div class="title">
-        [% nation %]
+       Personaggi 
     </div>
         <div class="container">
 		    <div class="row">
 			    <div class="12u">
+                   <header class="style1">
+						<h2>[% nation %]</h2>
+					</header>
 				    <div id="highlights">
 					    <div>
                             [% flip = 0 %]
@@ -21,6 +24,9 @@
                             [% END %]
 						</div>
 					</div>
+                    <ul class="actions actions-centered">
+					    <li><a href="/personaggi" class="button button-style1 button-big">Torna ai personaggi</a></li>
+					</ul>
 				</div>
 			</div>
 		</div>

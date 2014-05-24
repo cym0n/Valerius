@@ -21,6 +21,7 @@
                                                 [% IF prev_slug %]
 												<li><a href="/romanzo/[% prev_slug %]" class="button button-style2 button-big">Precedente</a></li>
 											    [% END %]
+                                            	<li><a href="/romanzo" class="button button-style3 button-big">Tutti i capitoli</a></li>
                                                 [% IF next_slug %]
                                             	<li><a href="/romanzo/[% next_slug %]" class="button button-style2 button-big">Successivo</a></li>
 											    [% END %]

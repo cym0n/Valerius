@@ -1,59 +1,68 @@
-		<!-- Intro Wrapper -->
-			<div id="intro-wrapper" class="wrapper wrapper-style1">
-				<div class="title">News</div>
-				<div class="container">
-					<div class="row">
-						<div class="12u">
-							
-							<!-- Intro -->
-								<section id="intro">
-                                [% if article.title || article.text %]
-                                <p class="style1">[% article.publish_date.strftime('%d-%m-%Y') %] - [% article.title %]</p>
-                            	<div class="style3">
-                                    [% article.text %]
-                                </div>
-                                [% end %]
-								</section>
-							<!-- /Intro -->
-							
-						</div>
-					</div>
-				</div>
-			</div>
-		<!-- /Intro Wrapper -->
-
-	    <!-- Main Wrapper -->
-			<div class="wrapper wrapper-style2">
-				<div class="title">Capitolo [% chapter.display_order %]</div>
-				<div class="container">
-					<div class="row">
-						<div class="12u">
-							
-							<!-- Main -->
-								<div id="main">
-									
-									
-									<!-- Features -->
-										<section id="features">
-											<header class="style1">
+<!-- Main Wrapper -->
+<div class="wrapper wrapper-style2">
+	<div class="title">Homepage</div>
+	    <div class="container">
+		    <div class="row">
+				<div class="12u">
+					<!-- Main -->
+					<div id="main">
+	                    <div>
+						    <div class="row">
+                                <!-- Central -->
+							    <div class="8u skel-cell-important">
+                                    <div id="content">
+                                    	<article class="is is-post">
+				        					<header class="style1">
 												<h2>[% chapter.title %]</h2>
+												<span class="byline">Capitolo [% chapter.display_order %]</span>
 											</header>
-                                            <div class="style3">
-                                                [% chapter.text %]
-                                            </div>
-											<ul class="actions actions-centered">
-												<li><a href="[% chapter.link %]" class="button button-style1 button-big">Leggi tutto...</a></li>
-											</ul>
-										</section>
+                                            [% chapter.text %]
+		                                    <ul class="actions actions-centered">
+										        <li><a href="[% chapter.link %]" class="button button-style1 button-big">Leggi tutto...</a></li>
+										    </ul>
+										</article>
+                                    </div>
+									<!-- Features -->
+									<!-- section id="features">
+									    <header class="style1">
+											<h2>[% chapter.title %]</h2>
+										</header>
+                                        <div class="style3">
+                                            [% chapter.text %]
+                                        </div>
+									    <ul class="actions actions-centered">
+										    <li><a href="[% chapter.link %]" class="button button-style1 button-big">Leggi tutto...</a></li>
+										</ul>
+									</section -->
 									<!-- /Features -->
-									
-								</div>
-							<!-- /Main -->
-							
-						</div>
-					</div>
-				</div>
+                                </div>
+                                <!-- /Central -->
+							    <!-- Sidebar -->
+                                <div class="4u">
+								    <div id="sidebar">
+								        <section class="is">
+                                            <header>
+                                                <h1>News</h1>
+										        <h2>[%  article.title %]</h2>
+                                    			<span class="byline">[% article.publish_date.strftime('%d-%m-%Y') %]</span>
+											</header>
+                                            [% IF article.image %]
+                                       	    <img class="image image-full" src="[% article.image %]" alt="" />
+                                            [% END %]
+											[% article.text %]
+                                        </section>
+                                    </div>
+                                </div>
+							    <!-- /Sidebar -->
+						    </div>
+                        </div>
+						<!-- /Main -->
+                    </div>
+			    </div>
 			</div>
-		<!-- /Main Wrapper -->
+		</div>
+	</div>
+</div>
+<!-- /Main Wrapper -->
 		
 

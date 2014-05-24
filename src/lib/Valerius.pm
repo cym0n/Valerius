@@ -41,7 +41,7 @@ get '/' => sub {
         $chapter_data{'text'} = $chapter->abstract('it');
         $chapter_data{'link'} = '/romanzo/' . $chapter_data{'slug'};
     }
-    template "index", { page_title => 'Homepage', page_description => 'Valerius Demoire, romanzo steampunk online pieno di guerra e robot giganti',
+    template "index", { body_class => 'right-sidebar', nav_page => 'home', page_title => 'Homepage', page_description => 'Valerius Demoire, romanzo steampunk online pieno di guerra e robot giganti',
                         article => \%news_data, chapter => \%chapter_data };
 };
 
@@ -50,7 +50,7 @@ get '/romanzo' => sub {
     my $page = params->{page} || 1;
     my $order = params->{order} || 'desc';
     my $elements = Strehler::Element::Article->get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
-    template "novel", { page_title => 'Romanzo', page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire',
+    template "novel", {  nav_page => 'chapters', page_title => 'Romanzo', page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire',
                         chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
 
 };
@@ -88,7 +88,7 @@ get '/romanzo/:slug' => sub {
         {
             $prev_slug = $prev->get_attr_multilang('slug', 'it');
         }
-        template "chapter", { page_title => 'Valerius Demoire - Capitolo ' . $chapter_data{'display_order'} . ' - ' . $chapter_data{'title'}, page_description => $chapter->incipit('it'), canonical => "http:/www.valeriusdemoire.it/romanzo/" . $chapter_data{'slug'},
+        template "chapter", {  nav_page => 'chapters', page_title => 'Valerius Demoire - Capitolo ' . $chapter_data{'display_order'} . ' - ' . $chapter_data{'title'}, page_description => $chapter->incipit('it'), canonical => "http:/www.valeriusdemoire.it/romanzo/" . $chapter_data{'slug'},
                               chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
     }
 };
@@ -107,7 +107,7 @@ get '/personaggi' => sub {
         $el{'image'} = $images->{'to_view'}->[0]->{'image'};
         push @data, \%el;
     }
-    template 'characters', { page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire",
+    template 'characters', {  nav_page => 'characters', page_title => 'Personaggi', page_description => "I personaggi che vivono le avventure nell'universo di Valerius Demoire",
                              nations => \@data };
 };
 
@@ -124,7 +124,7 @@ get '/personaggi/:nation' => sub {
         my $images = Strehler::Element::Image->get_list({ category_id => $nation->get_attr('id')});
         my $image = $images->{'to_view'}->[0]->{'source'};
         
-        template "chars_of_nation", { page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
+        template "chars_of_nation", {  nav_page => 'characters', page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
                                       characters => $characters->{'to_view'}, nation => ucfirst($n), image => $image};
     }
 };
@@ -136,7 +136,7 @@ get '/timeline' => sub {
 };
 
 get '/autore' => sub {
-    template 'author', { page_title => 'Autore', page_description => "Breve biografia dell'autore di Valerius Demoire" };
+    template 'author', {  nav_page => 'author', page_title => 'Autore', page_description => "Breve biografia dell'autore di Valerius Demoire" };
 };
 
 get '/closed' => sub {

@@ -13,3 +13,11 @@ a.active-chapter {
 .feature-list h3 {
     margin: 0;
 }
+.active-tab
+{
+    font-weight: bold;
+}
+#nav > ul > .active-tab > a
+{
+    color: #fff;
+}

@@ -15,7 +15,7 @@
                                 [% IF flip == 0 %]<div class="row">[% END %]
 							    <div class="4u">
 								    <section class="highlight highlight-one">
-									    [% IF c.image %]<img style="width:100%" src="[% c.image %]"></a>[% END %]
+									    [% IF c.image %]<img style="height:200px";max-width:100%" src="[% c.image %]" />[% END %]
 										<h3>[% c.title %]</h3>
 										<p>[% c.text %][% IF c.image_title %]<br /><em>immagine: [% c.image_title %]</em>[% END %]</p>
 									</section>

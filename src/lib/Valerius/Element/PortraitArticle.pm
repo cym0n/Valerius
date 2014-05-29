@@ -19,7 +19,7 @@ sub image_title
     my $image = Strehler::Element::Image->new($self->get_attr('image', 1));
     if($image->exists())
     {
-        return $image->get_attr_multilang('title', $language);
+        return $image->get_attr_multilang('title', $language) . " " . $image->get_attr_multilang('description', $language);
     }
     else
     {

@@ -70,6 +70,7 @@
 													</ul>
 												</li>
 												<li [% IF nav_page == 'characters' %]class="active-tab"[% END %]><a href="/personaggi">Personaggi</a></li>
+												<li [% IF nav_page == 'download' %]class="active-tab"[% END %]><a href="/download">Download</a></li>
 												<li [% IF nav_page == 'author' %]class="active-tab"[% END %]><a href="/autore">Autore</a></li>
                                                 <li>
                                                 </li>
@@ -97,7 +98,7 @@
 							<!-- Copyright -->
 								<div id="copyright">
 									<span>
-                                        &copy; Simone Far&egrave; - Design by <a href="http://html5up.net/">HTML5 UP</a> - Site powered by <a href="http://search.cpan.org/dist/Strehler/">Strehler</a>/<a href="http://perldancer.org">Dancer2</a>.
+                                        &copy; Simone Far&egrave; - Design by <a href="http://html5up.net/" target="_blank">HTML5 UP</a> - Site powered by <a href="http://search.cpan.org/dist/Strehler/" target="_blank">Strehler</a>/<a href="http://perldancer.org" target="_blank">Dancer2</a>.
 									</span>
 								</div>
 							<!-- /Copyright -->

@@ -139,6 +139,10 @@ get '/autore' => sub {
     template 'author', {  nav_page => 'author', page_title => 'Autore', page_description => "Breve biografia dell'autore di Valerius Demoire" };
 };
 
+get '/download' => sub {
+    template 'download', {  nav_page => 'download', page_title => 'Download', page_description => "Scarica qui i libri conclusi nel formato che trovi pi&ugrave; comodo" };
+};
+
 get '/closed' => sub {
     template 'closed', {}, {layout => 'valerius_light'};
 };

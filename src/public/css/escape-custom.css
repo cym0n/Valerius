@@ -21,3 +21,10 @@ a.active-chapter {
 {
     color: #fff;
 }
+#download-wrapper {
+    background: url("images/overlay.png") repeat scroll 0 0 #282B34;
+    color: rgba(255, 255, 255, 0.5);
+}
+.download-book {
+    padding: 0 6em;
+}

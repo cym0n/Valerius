@@ -1,0 +1,33 @@
+<div class="wrapper wrapper-style2">
+    <div class="title">Download</div>
+    <div class="container">
+        <div class="row">
+            <div class="12u">
+                <div id="main">
+                    <section class="download-book">
+                        <header class="style1">
+						    <h2>Libro primo</h2>
+							<p class="byline">In cui conosciamo Valerius Demoire e scopriamo un nuovo modo di fare la guerra</p>
+                        </header>
+                        <div class="feature-list">
+					        <div>
+							    <div class="row">
+								    <div class="6u">
+									    <section>
+										    <h3 class="fa fa-download"><a href="#">Scarica il libro primo in PDF</a></h3>
+										</section>
+								    </div>
+									<div class="6u">
+									    <section>
+										    <h3 class="fa fa-download">Scarica il libro primo in EPUB</h3>
+										</section>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </section>
+				</div>
+            </div>
+        </div> <!-- row -->
+    </div>
+</div>

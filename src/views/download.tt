@@ -14,12 +14,12 @@
 							    <div class="row">
 								    <div class="6u">
 									    <section>
-										    <h3 class="fa fa-download"><a href="#">Scarica il libro primo in PDF</a></h3>
+										    <h3 class="fa fa-download"><a href="/books/valerius_libro_primo.pdf">Scarica il libro primo in PDF</a></h3>
 										</section>
 								    </div>
 									<div class="6u">
 									    <section>
-										    <h3 class="fa fa-download">Scarica il libro primo in EPUB</h3>
+										    <h3 class="fa fa-download"><a href="/books/valerius_libro_primo.epub">Scarica il libro primo in EPUB</a></h3>
 										</section>
 									</div>
 								</div>

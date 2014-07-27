@@ -26,6 +26,28 @@
 							</div>
 						</div>
                     </section>
+                    <section class="download-book">
+                        <header class="style1">
+						    <h2>Libro secondo</h2>
+							<p class="byline">In cui Valerius Demoire affronta il suo momento pi&ugrave; buio e arriva allo scontro diretto con re Gregoire</p>
+                        </header>
+                        <div class="feature-list">
+					        <div>
+							    <div class="row">
+								    <div class="6u">
+									    <section>
+										    <h3 class="fa fa-download"><a href="/books/valerius_libro_secondo.pdf">Scarica il libro secondo in PDF</a></h3>
+										</section>
+								    </div>
+									<div class="6u">
+									    <section>
+										    <h3 class="fa fa-download"><a href="/books/valerius_libro_secondo.epub">Scarica il libro secondo in EPUB</a></h3>
+										</section>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </section>
 				</div>
             </div>
         </div> <!-- row -->

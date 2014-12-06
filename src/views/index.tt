@@ -16,25 +16,12 @@
 												<h2>[% chapter.title %]</h2>
 												<span class="byline">Capitolo [% chapter.display_order %]</span>
 											</header>
-                                            [% chapter.text %]
+                                            [% chapter.abstract %]
 		                                    <ul class="actions actions-centered">
-										        <li><a href="[% chapter.link %]" class="button button-style1 button-big">Leggi tutto...</a></li>
+										        <li><a href="/romanzo/[% chapter.slug %]" class="button button-style1 button-big">Leggi tutto...</a></li>
 										    </ul>
 										</article>
                                     </div>
-									<!-- Features -->
-									<!-- section id="features">
-									    <header class="style1">
-											<h2>[% chapter.title %]</h2>
-										</header>
-                                        <div class="style3">
-                                            [% chapter.text %]
-                                        </div>
-									    <ul class="actions actions-centered">
-										    <li><a href="[% chapter.link %]" class="button button-style1 button-big">Leggi tutto...</a></li>
-										</ul>
-									</section -->
-									<!-- /Features -->
                                 </div>
                                 <!-- /Central -->
 							    <!-- Sidebar -->

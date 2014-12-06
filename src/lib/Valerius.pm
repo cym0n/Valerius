@@ -1,10 +1,10 @@
 package Valerius;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Strehler::Dancer2::Plugin::EX;
 use Dancer2::Core::Error;
 use Date::Format;
-use Data::Dumper;
-use Valerius::Element::MarkdownArticle;
+use HTML::Entities;
 use Valerius::Element::PortraitArticle;
 
 set layout => 'valerius';
@@ -24,76 +24,43 @@ hook before => sub {
 hook before_template_render => sub {
         my $tokens = shift;
         $tokens->{'google_monitor'} = config->{'google_monitor'};
+        if($tokens->{'page_type'} && $tokens->{'page_type'} eq 'chapter_page')
+        {
+            $tokens->{'page_title'} = encode_entities('Valerius Demoire - Capitolo ' . $tokens->{'element'}->{'display_order'} . ' - ' . $tokens->{'element'}->{'title'});
+            $tokens->{'page_description'} = encode_entities($tokens->{'element'}->{'incipit'});
+            $tokens->{'canonical'} => "http:/www.valeriusdemoire.it/romanzo/" . $tokens->{'element'}->{'slug'};
+        }
     };
 
-get '/' => sub {
-    my $news = Valerius::Element::MarkdownArticle->get_last_by_date('notizie', 'it');
-    my $chapter = Valerius::Element::MarkdownArticle->get_last_by_order('romanzo', 'it');
-    my %news_data = ();
-    if($news)
-    {
-        %news_data = $news->get_ext_data('it');
-    }
-    my %chapter_data = ();
-    if($chapter)
-    {
-        %chapter_data = $chapter->get_ext_data('it');
-        $chapter_data{'text'} = $chapter->abstract('it');
-        $chapter_data{'link'} = '/romanzo/' . $chapter_data{'slug'};
-    }
-    template "index", { body_class => 'right-sidebar', nav_page => 'home', page_title => 'Homepage', page_description => 'Valerius Demoire, romanzo steampunk online pieno di guerra e robot giganti',
-                        article => \%news_data, chapter => \%chapter_data };
-};
 
-get '/romanzo' => sub {
-    my $entries_per_page = 20;
-    my $page = params->{page} || 1;
-    my $order = params->{order} || 'desc';
-    my $elements = Strehler::Element::Article->get_list({ page => $page, entries_per_page => $entries_per_page, category => 'romanzo', language => 'it', ext => 1, published => 1, order => $order});
-    template "novel", {  nav_page => 'chapters', page_title => 'Romanzo', page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire',
-                        chapters => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'} };
+latest_page '/', 'index',
+    { article => { category => 'notizie', 'item-type' => 'markdown' },
+      chapter => { category => 'romanzo', 'item-type' => 'markdown', by => 'order' }
+    }, 
+    { body_class => 'right-sidebar', nav_page => 'home', 
+      page_title => 'Homepage', 
+      page_description => 'Valerius Demoire, romanzo steampunk online pieno di guerra e robot giganti'};
 
-};
+list '/romanzo', 'novel', { category => 'romanzo' },
+    { nav_page => 'chapters', 
+      page_title => 'Romanzo', 
+      page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire' };
 
 get '/romanzo/ultimo-capitolo' => sub {
     my $last = Strehler::Element::Article->get_last_by_order('romanzo', 'it');
     my $slug = $last->get_attr_multilang('slug', 'it');
     forward '/romanzo/' . $slug;
 };
+
 get '/romanzo/primo-capitolo' => sub {
     my $last = Strehler::Element::Article->get_first_by_order('romanzo', 'it');
     my $slug = $last->get_attr_multilang('slug', 'it');
     forward '/romanzo/' . $slug;
 };
 
-get '/romanzo/:slug' => sub {
-    my $slug = params->{slug};
-    my $chapter = Valerius::Element::MarkdownArticle->get_by_slug($slug, 'it');
-    if( ! $chapter->exists() || $chapter->get_category_name() ne 'romanzo')
-    {
-        send_error("Capitolo inesistente", 404);
-    }
-    else
-    {
-        my %chapter_data = $chapter->get_ext_data('it');
-        my $next_slug = undef;
-        my $prev_slug = undef;
-        my $next = $chapter->next_in_category_by_order('it');
-        if($next->exists())
-        {
-            $next_slug = $next->get_attr_multilang('slug', 'it');
-        }
-        my $prev = $chapter->prev_in_category_by_order('it');
-        if($prev->exists())
-        {
-            $prev_slug = $prev->get_attr_multilang('slug', 'it');
-        }
-        template "chapter", {  nav_page => 'chapters', page_title => 'Valerius Demoire - Capitolo ' . $chapter_data{'display_order'} . ' - ' . $chapter_data{'title'}, page_description => $chapter->incipit('it'), canonical => "http:/www.valeriusdemoire.it/romanzo/" . $chapter_data{'slug'},
-                              chapter => \%chapter_data, prev_slug => $prev_slug, next_slug => $next_slug };
-    }
-};
-
-
+slug '/romanzo/:slug', 'chapter', { category => 'romanzo', 'item-type' => 'markdown' },
+    { nav_page => 'chapters', 'page_type' => 'chapter_page' };
+    
 get '/personaggi' => sub {
     my $main = Strehler::Meta::Category->new(category => 'personaggi', parent => undef);
     my @subs = $main->subcategories();
@@ -127,12 +94,6 @@ get '/personaggi/:nation' => sub {
         template "chars_of_nation", {  nav_page => 'characters', page_title => 'Personaggi ' .  $n, page_description => 'Personaggi ' .  $n,
                                       characters => $characters->{'to_view'}, nation => ucfirst($n), image => $image};
     }
-};
-
-get '/timeline' => sub {
-    my $history = Valerius::Element::MarkdownArticle->get_list({ category => 'timeline', ext => 1, entries_per_page => 100, order_by => 'display_order', order => 'asc', published => 1});
-    template "timeline", { page_title => 'Timeline', page_description => 'La cronologia degli avvenimenti dell\'universo di Valerius Demoire',
-                           history => $history->{'to_view'} };
 };
 
 get '/autore' => sub {

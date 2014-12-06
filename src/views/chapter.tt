@@ -1,6 +1,6 @@
 	    <!-- Main Wrapper -->
 			<div class="wrapper wrapper-style2">
-				<div class="title">Capitolo [% chapter.display_order %]</div>
+				<div class="title">Capitolo [% element.display_order %]</div>
 				<div class="container">
 					<div class="row">
 						<div class="12u">
@@ -12,19 +12,15 @@
 									<!-- Features -->
 										<section id="features">
 											<header class="style1">
-												<h2>[% chapter.title %]</h2>
+												<h2>[% element.title %]</h2>
 											</header>
                                             <div class="style3">
-                                                [% chapter.text %]
+                                                [% element.text %]
                                             </div>
                                 			<ul class="actions actions-centered">
-                                                [% IF prev_slug %]
-												<li><a href="/romanzo/[% prev_slug %]" class="button button-style2 button-big">Precedente</a></li>
-											    [% END %]
+												<li><a href="/romanzo/[% prev.slug %]" class="button button-style2 button-big">Precedente</a></li>
                                             	<li><a href="/romanzo" class="button button-style3 button-big">Tutti i capitoli</a></li>
-                                                [% IF next_slug %]
-                                            	<li><a href="/romanzo/[% next_slug %]" class="button button-style2 button-big">Successivo</a></li>
-											    [% END %]
+                                            	<li><a href="/romanzo/[% next.slug %]" class="button button-style2 button-big">Successivo</a></li>
 											</ul>
 										</section>
 									<!-- /Features -->

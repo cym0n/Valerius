@@ -20,10 +20,16 @@ charset: "UTF-8"
 
 #template: "simple"
 
+#template: "template_toolkit"
+#engines:
+#    template_toolkit:
+#        ENCODING: utf8
 template: "template_toolkit"
 engines:
-    template_toolkit:
-        ENCODING: utf8
+    template:
+        template_toolkit:
+            ENCODING: utf8
+            DEFAULT: 'no.tt'
 
 
 plugins:
@@ -43,6 +49,11 @@ Strehler:
     admin_secured: 1
     languages: ['it']
     default_language: 'it'
+    extra_menu:
+        markdown:
+            visible: 0
+            label: markdown
+            class: Valerius::Element::MarkdownArticle
 
 site_closed: 1
 

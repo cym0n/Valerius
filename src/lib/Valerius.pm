@@ -34,14 +34,14 @@ hook before_template_render => sub {
 
 
 latest_page '/', 'index',
-    { article => { category => 'notizie', 'item-type' => 'markdown' },
+    { article => 'notizie',
       chapter => { category => 'romanzo', 'item-type' => 'markdown', by => 'order' }
     }, 
     { body_class => 'right-sidebar', nav_page => 'home', 
       page_title => 'Homepage', 
       page_description => 'Valerius Demoire, romanzo steampunk online pieno di guerra e robot giganti'};
 
-list '/romanzo', 'novel', { category => 'romanzo' },
+list '/romanzo', 'novel', 'romanzo',
     { nav_page => 'chapters', 
       page_title => 'Romanzo', 
       page_description => 'Elenco dei capitoli che formano il romanzo di Valerius Demoire' };
@@ -58,7 +58,7 @@ get '/romanzo/primo-capitolo' => sub {
     forward '/romanzo/' . $slug;
 };
 
-slug '/romanzo/:slug', 'chapter', { category => 'romanzo', 'item-type' => 'markdown' },
+slug '/romanzo/:slug', 'chapter', 'romanzo',
     { nav_page => 'chapters', 'page_type' => 'chapter_page' };
     
 get '/personaggi' => sub {

@@ -58,6 +58,7 @@ Strehler:
             class: Valerius::Element::MarkdownArticle
     dashboard:
         - type: list
+          title: capitoli
           entity: article
           category: romanzo
           by: order

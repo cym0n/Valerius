@@ -50,11 +50,17 @@ Strehler:
     admin_secured: 1
     languages: ['it']
     default_language: 'it'
+    dashboard_active: 1
     extra_menu:
         markdown:
             visible: 0
             label: markdown
             class: Valerius::Element::MarkdownArticle
+    dashboard:
+        - type: list
+          entity: article
+          category: romanzo
+          by: order
 
 site_closed: 1
 

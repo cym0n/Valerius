@@ -1,189 +1,57 @@
-function subcategories(cat, subcat)
-{
-    var option = $("#category_selector").attr('rel');
-    url = "/admin/category/select/"+cat;
-    if(option)
+function tags_refresh() {
+    var id = $('#category').val();
+    if(id != null)
     {
-        url = url+'?option='+option;
-    }
-    var request = $.ajax({
-        url: url,
-        dataType: 'text',
-    });
-    request.done(function(msg) {
-        if(msg == 0)
+        if(id == starting_category && object_id != null)
         {
-            $("#subcat").hide();
-            $('#subcat').val(null);
+            var request = $.ajax({
+                url: "/admin/"+item_type+"/tagform/"+object_id,
+                dataType: 'text',
+            });
+            request.done(function(msg) {
+                $('#tags-place').html(msg);
+            });
         }
         else
         {
-            $("#subcat").show();
-            $("#subcat").html(msg);
-            if(subcat)
-            {
-                $("#subcat").val(subcat);
-            }
-            else
-            {
-                $('#subcat').val(null);
-            }
-        }
-    });
-}
-
-
-
-function category_init(cat, subcat)
-{
-    var request = $.ajax({
-        url: "/admin/category/select",
-        dataType: 'text',
-    });
-    request.done(function(msg) {
-       $("#category_selector").html(msg);
-       if(cat)
-       {
-            $("#category_selector").val(cat);
-       }
-    });
-    if(cat)
-    {
-        subcategories(cat, subcat);
-    }
-    else
-    {
-        $("#subcat").hide();
-    }
-    category_commander(cat, subcat);
-};
-function category_commander(cat, subcat)
-{
-    if(! cat)
-    {
-        cat = $("#category_selector").val();
-    }
-    if(! subcat)
-    {
-        subcat = $("#subcat").val();
-    }
-    if(! cat)
-    {
-        $("#subcat").hide();
-        $('#subcat').val(null);
-    }
-    else
-    {
-        if(! subcat)
-        {
-            subcategories(cat, subcat);
+            var request = $.ajax({
+                url: "/admin/category/tagform/"+item_type+"/"+id,
+                dataType: 'text',
+            });
+            request.done(function(msg) {
+                $('#tags-place').html(msg);
+            });
         }
     }
-    $("#category_selector").on("change", subcat_manager);
-}
-function subcat_manager()
-{
-    var category = $("#category_selector").val(); 
-    if(category)
+};
+function tags_init() {
+    if(object_id != null)
     {
-        subcategories(category);
+        var request = $.ajax({
+            url: "/admin/"+item_type+"/tagform/"+object_id,
+            dataType: 'text',
+        });
+        request.done(function(msg) {
+            $('#tags-place').html(msg);
+            $("#category").on("change", tags_refresh);
+        });
     }
     else
     {
-        $("#subcat").hide();
-        $('#subcat').val(null);
-    }   
+        $("#category").on("change", tags_refresh);
+    }
 };
-function get_final_category()
-{
-    if((! $('#subcat').val()) || (! $('#subcat').is(":visible")))
-    {
-        return $('#category_selector').val();
-    }
-    else
-    {
-        if($('#subcat').val() == '*')
-        {
-            return "anc:"+$('#category_selector').val();
-        }
-        else
-        {
-            return $('#subcat').val();
-        }
-    }
-}
-
-function tags_refresh_on_parent() {
-    category = $("#category_selector").val()
-    var request = $.ajax({
-        url: "/admin/category/tagform/"+item_type+"/"+category,
-        dataType: 'text',
-    });
-    request.done(function(msg) {
-        $('#tags-place').html(msg);
-    });
-};
-function tags_refresh_on_sub() {
-    category = $("#subcat").val();
-    if(! category)
-    {
-        category = $("#category_selector").val()
-    }
-    var request = $.ajax({
-        url: "/admin/category/tagform/"+item_type+"/"+category,
-        dataType: 'text',
-    });
-    request.done(function(msg) {
-        $('#tags-place').html(msg);
-    });
-};
-function tags_refresh_on_id(id) {
-    var request = $.ajax({
-        url: "/admin/"+item_type+"/tagform/"+id,
-        dataType: 'text',
-    });
-    request.done(function(msg) {
-        $('#tags-place').html(msg);
-    });
-};
-function tags_init(id)
-{
-    $("#category_selector").on("change", tags_refresh_on_parent);
-    $("#subcat").on("change", tags_refresh_on_sub);
-    if(id)
-    {
-        tags_refresh_on_id(id)
-    }
-    else
-    {
-        tags_refresh_on_parent();
-    }
-}
 function get_last_chapter() {
-    var category;
-    if ($("#category_selector").length > 0)
+    var category = $("#category").val();
+    if ($("#category").val() != '')
     {
-        if($("#subcat").val())
-        {
-            category = $("#subcat").val();
-        }
-        else
-        {
-            category = $("#category_selector").val();   
-        }
-        if(category)
-        {
-            url = "/admin/"+item_type+"/lastchapter/"+category;
-        }
-        else
-        {
-            alert("No category selected")
-            return false;
-        }
+
+        url = "/admin/"+item_type+"/lastchapter/"+category;
     }
     else
     {
-        url = "/admin/"+item_type+"/lastchapter/";
+        alert("No category selected")
+        return false;
     }
     var request = $.ajax({
                                url: url,
@@ -212,3 +80,72 @@ $(function() {
         });
   });
 
+
+function category_info(query, input, category_box, func)
+{
+    var url = '/admin/category/info';
+    var data = 'query='+query+'&input='+input;
+    var option = category_box.attr('rel');
+    if(option)
+    {
+        data = data+'&option='+option;
+    }
+    var request = $.ajax({
+        url: url,
+        data: data,
+    });
+    request.done(function(msg) {
+        func(category_box, msg);
+    });
+}
+function init_category_boxes()
+{
+    $(".category-widget").each(function ( index ) {
+        var category_box = $( this );
+        input = category_box.find( ".sel-category-id" ).val();
+        category_info("id", input, category_box, update_category_box);
+    });
+}
+
+
+function get_data_for_category( event )
+{
+    var category_box = $( event.target ).parents('div').find('.category-widget');
+    var query;
+    var input;
+    category_box.find(".sel-category-loader").show();
+    if(event.data.origin == 'combo')
+    {
+        query = 'id';
+        input = $( event.target ).val();
+    }
+    else if(event.data.origin == 'input')
+    {
+        query = 'name';
+        input = category_box.find(".sel-category-input").find(".sel-category-name").val();
+    }
+    else if(event.data.origin == 'parent')
+    {
+        query = 'id';
+        input =  category_box.find(".sel-category-parent").val();
+    }
+    category_info(query, input, category_box, update_category_box);
+}
+function update_category_box(category_box, msg)
+{
+    category_box.find(".sel-category-name").val(msg.ext_name);
+
+    category_combo = category_box.find(".sel-category-combo");
+    category_combo.html(msg.select);
+    if(msg.subcategories == 0)
+    {
+        category_combo.prop('disabled', true);
+    }
+    else
+    {
+        category_combo.prop('disabled', false);
+    }   
+    category_box.find(".sel-category-id").val(msg.id).trigger("change");
+    category_box.find(".sel-category-parent").val(msg.parent);
+    category_box.find(".sel-category-loader").hide();
+}

@@ -14,7 +14,6 @@ sub multilang_data_fields
 sub image_title
 {
     my $self = shift;
-    my $attribute = shift;
     my $language = shift;
     my $image = Strehler::Element::Image->new($self->get_attr('image', 1));
     if($image->exists())

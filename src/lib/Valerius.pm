@@ -80,7 +80,8 @@ get '/personaggi' => sub {
 
 get '/personaggi/:nation' => sub {
     my $n = params->{nation};
-    my $nation = Strehler::Meta::Category->new(parent => 'personaggi', category => $n);
+    #my $nation = Strehler::Meta::Category->new(parent => 'personaggi', category => $n);
+    my $nation = Strehler::Meta::Category->explode_name("personaggi/" . $n);
     if(! $nation->exists())
     {
         send_error("Nazione inesistente", 404);
